@@ -1,0 +1,10 @@
+# Testing
+pytest
+
+# Coding
+matplotlib
+pandas
+scipy
+scikit-learn
+numpy
+numba
