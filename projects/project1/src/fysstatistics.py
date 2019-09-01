@@ -156,14 +156,14 @@ def lin_reg_inv(X, y):
     return np.linalg.inv(X.T@X)@X.T@y
 
 
-#@jit()
 def lin_reg_svd(x: ndarray, y: ndarray) -> ndarray:
     u, s, v = scl.svd(x)
     return v.T @ scl.pinv(scl.diagsvd(s, u.shape[0], v.shape[0])) @ u.T @ y
 
+
 def isiterable(obj: Any) -> bool:
     try:
-        iterator = iter(obj)
+        _ = iter(obj)
         return True
     except TypeError:
         return False
