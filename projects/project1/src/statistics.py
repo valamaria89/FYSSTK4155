@@ -10,7 +10,10 @@ class Regressor:
     def __init__(self, predictors: Sequence[ndarray], response: ndarray,
                  method='linear') -> None:
         method = method.lower()
-        self.predictors = [predictor.flatten() for predictor in predictors]
+        if isinstance(predictors, np.ndarray):
+            self.predictors = [predictors]
+        else:
+            self.predictors = [predictor.flatten() for predictor in predictors]
         self.response = response.flatten()
         self.orders: Optional[List[List[int]]] = None
         self.β: Optional[List[float]] = None
@@ -29,6 +32,7 @@ class Regressor:
             if not isiterable(order):
                 orders[i] = list(range(1, order+1))
         self.orders = orders
+        print(self.orders)
         self.vandermonde = vandermonde(self.predictors, orders)
         if np.linalg.cond(self.vandermonde) < sys.float_info.epsilon:
             β = lin_reg_inv(self.vandermonde, self.response)
@@ -37,7 +41,7 @@ class Regressor:
         self.β = β
         return β
 
-    def predict(self, predictors: Sequence[ndarray]) -> ndarray:
+    def predict(self, predictors: Union[ndarray, Sequence[ndarray]]) -> ndarray:
         """ Predict the response based on fit
 
         Args:
@@ -46,6 +50,8 @@ class Regressor:
             The predicted values.
         """
         assert self.β is not None, "Perform fitting before predicting"
+        if isinstance(predictors, ndarray):
+            predictors = [predictors]
         if len(predictors) != len(self.predictors):
             raise ValueError("Must provide same amount of predictors")
 
@@ -87,7 +93,7 @@ class Regressor:
         y̅ = y.mean()
         return 1 - np.sum((y - ỹ)**2) / np.sum((y - y̅)**2)
 
-    def MSE(self, predictors: Optional[Sequence[ndarray]] = None,
+    def mse(self, predictors: Optional[Sequence[ndarray]] = None,
             response: Optional[ndarray] = None) -> float:
         """ Calculates the mean square error (MSE)
 
@@ -114,7 +120,7 @@ class Regressor:
             assert predictors is not None, "Must provide predictors"
         else:
             y = self.response
-        return np.mean(np.sum((y - ỹ)**2))
+        return np.mean((y - ỹ)**2)
 
 
 def vandermonde(predictors: Sequence[ndarray],
