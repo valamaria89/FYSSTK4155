@@ -1,9 +1,7 @@
-import sys
-sys.path.insert(0, "../src/")
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
-from statistics import vandermonde, Regressor
+from fysstatistics import vandermonde, Regressor
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.linear_model import LinearRegression
 from resources import franke
