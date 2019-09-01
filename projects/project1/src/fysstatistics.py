@@ -3,7 +3,8 @@ import scipy.linalg as scl
 import sys
 from numpy import ndarray
 from numba import jit
-from typing import Sequence, Union, Any, Optional, List
+from scipy import stats
+from typing import Sequence, Union, Any, Optional, List, Tuple
 
 
 class Regressor:
@@ -32,7 +33,6 @@ class Regressor:
             if not isiterable(order):
                 orders[i] = list(range(1, order+1))
         self.orders = orders
-        print(self.orders)
         self.vandermonde = vandermonde(self.predictors, orders)
         if np.linalg.cond(self.vandermonde) < sys.float_info.epsilon:
             β = lin_reg_inv(self.vandermonde, self.response)
@@ -50,18 +50,20 @@ class Regressor:
             The predicted values.
         """
         assert self.β is not None, "Perform fitting before predicting"
-        if isinstance(predictors, ndarray):
+        if isinstance(predictors, np.ndarray):
+            if len(self.predictors) != 1:
+                raise ValueError("Must provide same amount of predictors")
+            shape = predictors.shape
             predictors = [predictors]
-        if len(predictors) != len(self.predictors):
-            raise ValueError("Must provide same amount of predictors")
+        else:
+            if len(predictors) != len(self.predictors):
+                raise ValueError("Must provide same amount of predictors")
+            shape = predictors[0].shape
+            predictors = [predictor.flatten() for predictor in predictors]
 
-        ŷ = self.β[0] * np.ones_like(predictors[0])
-        i = 1
-        for predictor, order in zip(predictors, self.orders):
-            for n in order:
-                ŷ += self.β[i] * predictor ** n
-                i += 1
-        return ŷ
+        X = vandermonde(predictors, self.orders)
+        y = (X * self.β).sum(axis=1)
+        return y.reshape(shape)
 
     def r2(self, predictors: Optional[Sequence[ndarray]] = None,
            response: Optional[ndarray] = None) -> float:
@@ -121,6 +123,51 @@ class Regressor:
         else:
             y = self.response
         return np.mean((y - ỹ)**2)
+
+    @property
+    def SSE(self) -> float:
+        """ Error sum of squares """
+        return np.sum((self.response - self.predict(self.predictors))**2)
+
+    @property
+    def sigma2(self) -> float:
+        """ Estimate of σ² """
+        N, p = self.vandermonde.shape
+        # Note that N - p = N - (k+1)
+        std_err = 1/(N - p) * self.SSE
+        return std_err
+
+    @property
+    def var(self) -> ndarray:
+        X = self.vandermonde
+        N, p = X.shape
+        Σ = np.linalg.inv(X.T@X)
+        return np.diag(Σ)*self.sigma2
+
+    @property
+    def tscore(self) -> ndarray:
+        tscore = self.β/np.sqrt(self.var)
+        return tscore
+
+    def ci(self, alpha) -> ndarray:
+        """ Compute the 1-2α confidence interval
+
+        Assumes t distribution of N df.
+
+        Args:
+            alpha: The percentile to compute
+        Returns:
+            The lower and upper limits of the CI as p×2 matrix
+            where p is the number of predictors + intercept.
+        """
+        X = self.vandermonde
+        N, p = X.shape
+        zalpha = np.asarray(stats.t.interval(alpha, N - p))
+        σ = np.sqrt(self.var)
+        ci = np.zeros((p, 2))
+        for i, β in enumerate(self.β):
+            ci[i, :] = β + zalpha*σ[i]
+        return ci
 
 
 def vandermonde(predictors: Sequence[ndarray],

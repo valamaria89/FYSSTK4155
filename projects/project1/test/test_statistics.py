@@ -1,9 +1,12 @@
 import numpy as np
 import pytest
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+import pandas as pd
 from numpy.testing import assert_allclose
-from fysstatistics import vandermonde, Regressor
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.linear_model import LinearRegression
+from fysstatistics import vandermonde, Regressor
 from resources import franke
 
 
@@ -120,4 +123,16 @@ def test_regressor_2d(franke_noisy):
     mse = mean_squared_error(Z.flatten(), Z_tilde.flatten())
     assert_allclose(r2, reg.r2())
     assert_allclose(mse, reg.mse())
+
+    # Test confidence interval
+    df = pd.DataFrame(data=reg.vandermonde, columns=['constant', 'x1', 'x2', 'x3', 'x4', 'x5',
+                                                        'y1', 'y2', 'y3', 'y4', 'y5'])
+    df['response'] = reg.response
+    res = smf.ols("response ~ x1 + x2 + x3 + x4 + x5 + y1 + y2 + y3 + y4 + y5", data=df).fit()
+
+    tscore = np.asarray(res.tvalues)
+    assert_allclose(tscore, reg.tscore)
+
+    ci = np.asarray(res.conf_int())
+    assert_allclose(ci, reg.ci(0.95))
 
