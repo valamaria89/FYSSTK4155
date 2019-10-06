@@ -1,0 +1,23 @@
+\contentsline {title}{ \relax \fontsize {12}{14pt}\selectfont \textsc {FYSSTK4155} \@centercr [25pt] \rule {\linewidth }{0.5pt} \@centercr [0.4cm] \relax \fontsize {20.74}{25pt}\selectfont Project 1 - Regression}{1}{section*.1}% 
+\tocdepth@munge 
+\contentsline {section}{\numberline {}Contents}{1}{section*.2}% 
+\tocdepth@restore 
+\contentsline {section}{\numberline {I}Introduction}{2}{section*.3}% 
+\contentsline {section}{\numberline {II}Theory}{2}{section*.4}% 
+\contentsline {subsection}{\numberline {A}Ordinary Least Squares}{2}{section*.5}% 
+\contentsline {subsection}{\numberline {B}Ridge Regularization}{3}{section*.9}% 
+\contentsline {subsection}{\numberline {C}Lasso Regularization}{3}{section*.10}% 
+\contentsline {subsection}{\numberline {D}Bias Variance Tradeoff}{4}{section*.11}% 
+\contentsline {subsection}{\numberline {E}Cross Validation}{4}{section*.15}% 
+\contentsline {section}{\numberline {III}Method}{5}{section*.16}% 
+\contentsline {subsection}{\numberline {A}Simple Terrain Approximation}{5}{section*.17}% 
+\contentsline {subsection}{\numberline {B}Real World Terrain Data}{5}{section*.19}% 
+\contentsline {subsection}{\numberline {C}Implementation Details}{6}{section*.21}% 
+\contentsline {section}{\numberline {IV}Results and Discussion}{6}{section*.22}% 
+\contentsline {subsection}{\numberline {A}Modeling the Franke Function}{6}{section*.23}% 
+\contentsline {subsubsection}{\numberline {1}Ordinary Least Squares}{6}{section*.24}% 
+\contentsline {subsubsection}{\numberline {2}Ridge Regularization}{8}{section*.33}% 
+\contentsline {subsubsection}{\numberline {3}Lasso Regularization}{9}{section*.38}% 
+\contentsline {subsection}{\numberline {B}Comparison}{10}{section*.43}% 
+\contentsline {subsection}{\numberline {C}Terrain Data}{11}{section*.45}% 
+\contentsline {section}{\numberline {V}Conclusion}{13}{section*.50}% 

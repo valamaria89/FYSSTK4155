@@ -1,26 +1,32 @@
 import numpy as np
 import scipy.linalg as scl
-import sys
+import itertools
 from numpy import ndarray
-from numba import jit
+import sys
 from scipy import stats
-from typing import Sequence, Union, Any, Optional, List, Tuple
+from typing import Sequence, Union, Any, Optional, List, Tuple, Dict
+from sklearn.linear_model import Lasso as skLasso
+import warnings
 
 
 class Regressor:
-    def __init__(self, predictors: Sequence[ndarray], response: ndarray,
-                 method='linear') -> None:
-        method = method.lower()
+    def __init__(self, predictors: Sequence[ndarray],
+                 response: ndarray) -> None:
         if isinstance(predictors, np.ndarray):
             self.predictors = [predictors]
         else:
             self.predictors = [predictor.flatten() for predictor in predictors]
         self.response = response.flatten()
-        self.orders: Optional[List[List[int]]] = None
+        self.orders: Optional[Sequence[Sequence[int]]] = None
         self.β: Optional[List[float]] = None
-        self.design: Optional[ndarray] = None
+        self.vandermonde: Optional[ndarray] = None
+        self.interactions: bool = False
+        self.max_interaction: Optional[int] = None
+        self.condition_number = 0
 
-    def fit(self, orders: Sequence[Union[int, Sequence[int]]]) -> None:
+    def fit(self, orders: Sequence[Union[int, Sequence[int]]],
+            interactions: bool = False,
+            max_interaction: Optional[int] = None) -> ndarray:
         """ Perform a fitting using the exponents in orders
 
         Args:
@@ -29,16 +35,55 @@ class Regressor:
                 all lower orders will be used as well.
                 The constant term is always present.
         """
+        # Construct the orders to fit
         for i, order in enumerate(orders):
             if not isiterable(order):
                 orders[i] = list(range(1, order+1))
         self.orders = orders
-        self.vandermonde = vandermonde(self.predictors, orders)
-        if np.linalg.cond(self.vandermonde) < sys.float_info.epsilon:
-            β = lin_reg_inv(self.vandermonde, self.response)
+
+        # Construct the design matrix
+        self.max_interaction = max_interaction
+        if interactions or max_interaction is not None:
+            self.interactions = True
+
+        self.vandermonde = self.design_matrix(self.predictors)
+
+        if self.vandermonde.shape[0] < self.vandermonde.shape[1]:
+            warnings.warn("Number of features surpasses number of samples")
+
+        self.vandermonde = self.standardize(self.vandermonde)
+
+        self.β = self.solve(self.vandermonde, self.response)
+        return self.β
+
+    def standardize(self, matrix: ndarray) -> ndarray:
+        # Standardize the matrix
+        mean = np.mean(matrix[:, 1:], axis=0)
+        std = np.std(matrix[:, 1:], axis=0)
+
+        def standardizer(mat):
+            # Ignore the first column of constant term
+            mat[:, 1:] = (mat[:, 1:] - mean[np.newaxis, :])/std[np.newaxis, :]
+            return mat
+        self.standardizer = standardizer
+        return standardizer(matrix)
+
+    def design_matrix(self, predictors) -> ndarray:
+
+        matrix = vandermonde(predictors, self.orders)
+
+        # Handle interaction terms
+        if self.interactions:
+            matrix = add_interactions(matrix, self.orders,
+                                      self.max_interaction)
+        return matrix
+
+    def solve(self, design_matrix, response) -> ndarray:
+        self.condition_number = np.linalg.cond(design_matrix)
+        if self.condition_number < sys.float_info.epsilon:
+            β = lin_reg_inv(design_matrix, response)
         else:
-            β = lin_reg_svd(self.vandermonde, self.response)
-        self.β = β
+            β = lin_reg_svd(design_matrix, response)
         return β
 
     def predict(self, predictors: Union[ndarray, Sequence[ndarray]]) -> ndarray:
@@ -61,8 +106,14 @@ class Regressor:
             shape = predictors[0].shape
             predictors = [predictor.flatten() for predictor in predictors]
 
-        X = vandermonde(predictors, self.orders)
-        y = (X * self.β).sum(axis=1)
+        X = self.design_matrix(predictors)
+        X = self.standardizer(X)
+
+        # If the constant coefficient is taken care of elsewhere
+        if X.shape[1] == len(self.β) - 1:
+            y = self.β[0] + X@self.β[1:]
+        else:
+            y = X@self.β
         return y.reshape(shape)
 
     def r2(self, predictors: Optional[Sequence[ndarray]] = None,
@@ -169,6 +220,86 @@ class Regressor:
             ci[i, :] = β + zalpha*σ[i]
         return ci
 
+    def betadict(self) -> Dict[str, float]:
+        assert self.β is not None
+        assert self.orders is not None
+        coeffs = {'const': self.β[0]}
+        i = 1
+        for order in self.orders[0]:
+            coeffs['x^'+str(order)] = self.β[i]
+            i += 1
+
+        for order in self.orders[1]:
+            coeffs['y^'+str(order)] = self.β[i]
+            i += 1
+
+        if self.interactions:
+            for x, y in itertools.product(*self.orders):
+                if self.max_interaction is not None:
+                    if x * y > self.max_interaction:
+                        continue
+                coeffs['x^'+str(x)+'y^'+str(y)] = self.β[i]
+                i += 1
+
+        return coeffs
+
+    def df(self) -> ndarray:
+        X = self.vandermonde
+        assert X is not None
+        H = X@np.linalg.inv(X.T@X)@X.T
+        return np.trace(H)
+
+
+class Ridge(Regressor):
+    def __init__(self, predictors: Sequence[ndarray],
+                 response: ndarray,
+                 parameter: float) -> None:
+        super().__init__(predictors, response)
+        self.parameter = parameter
+
+    def design_matrix(self, predictors) -> ndarray:
+        matrix = super().design_matrix(predictors)
+        # The constant coefficient can be removed
+        matrix = matrix[:, 1:]
+        return matrix
+
+    def standardize(self, matrix: ndarray) -> ndarray:
+        # Standardize the matrix
+        mean = np.mean(matrix, axis=0)
+        std = np.std(matrix, axis=0)
+
+        def standardizer(mat):
+            # Ignore the first column of constant term
+            mat = (mat - mean[np.newaxis, :])/std[np.newaxis, :]
+            return mat
+        self.standardizer = standardizer
+        return standardizer(matrix)
+
+    def solve(self, design_matrix, response) -> ndarray:
+        X = design_matrix
+        y = response
+        # if np.linalg.cond(self.vandermonde) < sys.float_info.epsilon:
+        β = np.linalg.inv(X.T@X + self.parameter*np.eye(X.shape[1]))@X.T@y
+        # The constant is given by 1/N Σ y_i
+        β = np.array([np.mean(y), *β])
+        return β
+
+    def df(self) -> ndarray:
+        X = self.vandermonde
+        assert X is not None
+        H = X@np.linalg.inv(X.T@X + self.parameter*np.eye(X.shape[1]))@X.T
+        return np.trace(H)
+
+
+class Lasso(Ridge):
+    def solve(self, design_matrix, response) -> ndarray:
+        X = design_matrix
+        y = response
+        clf = skLasso(alpha=self.parameter, fit_intercept=False)
+        clf.fit(X, y)
+        β = np.array([np.mean(y), *clf.coef_])
+        return β
+
 
 def vandermonde(predictors: Sequence[ndarray],
                 orders: Sequence[Sequence[int]]) -> ndarray:
@@ -198,7 +329,23 @@ def vandermonde(predictors: Sequence[ndarray],
     return X
 
 
-@jit(nopython=True)
+def add_interactions(vandermonde: ndarray,
+                     orders: Sequence[Sequence[int]],
+                     max_interaction: Optional[int] = None) -> ndarray:
+    # First column is constant term
+    assert len(orders) == 2, "Only two term interactions supported"
+    offset = len(orders[0])
+    for col_x, col_y in itertools.product(*orders):
+        if max_interaction is not None:
+            if col_x * col_y > max_interaction:
+                continue
+        col_y += offset
+        product = vandermonde[:, col_x] * vandermonde[:, col_y]
+        vandermonde = np.append(vandermonde, product[..., None], axis=1)
+    return vandermonde
+
+
+#@jit(nopython=True)
 def lin_reg_inv(X, y):
     return np.linalg.inv(X.T@X)@X.T@y
 

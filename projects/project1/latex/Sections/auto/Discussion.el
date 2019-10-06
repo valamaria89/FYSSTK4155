@@ -1,0 +1,30 @@
+(TeX-add-style-hook
+ "Discussion"
+ (lambda ()
+   (LaTeX-add-labels
+    "sec:Discussion"
+    "sec:model-franke-funct"
+    "fig:olscgrouped"
+    "fig:olsmse"
+    "fig:olsci"
+    "fig:olscoeff"
+    "fig:effectivedf"
+    "fig:condition"
+    "fig:correlation"
+    "fig:olsr2"
+    "sec:ridge-regularization"
+    "fig:condridge"
+    "fig:ridgemse"
+    "fig:ridgecoeff"
+    "fig:ridgecoeffevo"
+    "fig:lassomse"
+    "fig:lassocoeff"
+    "fig:lassocoeff_evo"
+    "fig:zeros"
+    "fig:compare"
+    "fig:geo_reg_mse"
+    "fig:geo_ridge_mse"
+    "fig:geo_lasso_mse"
+    "fig:geocomp"))
+ :latex)
+
