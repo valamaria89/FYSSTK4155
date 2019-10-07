@@ -4,8 +4,8 @@
    (LaTeX-add-labels
     "sec:Theory"
     "subsec:OLS"
-    "fig:lq"
     "eq:1"
+    "fig:lq"
     "subsec:Ridge"
     "subsec:Lasso"
     "sec:bias-vari-trad"

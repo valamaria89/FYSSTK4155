@@ -8,8 +8,8 @@ it by the relation:
 \begin{equation*}
   Y = f(X) + \varepsilon
 \end{equation*}
-where \(f\) is the true relationship and \(\varepsilon\) the random error
-with \(E(\varepsilon) = 0\) and \(Var(\varepsilon) = \sigma^{2}\).
+where \(f\) is the true relationship and \(\varepsilon\) random error
+having \(\EX(\varepsilon) = 0\) and \(\text{Var}(\varepsilon) = \sigma^{2}\).
 
 \textit{Regression} is the process of approximating \(f\)
 by some model. The simplest form is linear regression where a affine model is
@@ -22,10 +22,10 @@ used, written:
 or using matrix notation:
 
 \begin{equation*}
-  \hat{Y} = X^{T}\hat\beta
+  \hat{\vb{Y}} = \vb{X}^{T}\mathbf{\hat{\beta}}
 \end{equation*}
 
-The \(X\) matrix is called the \textit{design matrix}, whose first column is
+The \(\vb{X}\) matrix is called the \textit{design matrix}, whose first column is
 constant 1s to account for the bias term \(\hat\beta_{0}\).
 
 Fitting the linear model to the observed data is often done by minimizing the
@@ -61,15 +61,31 @@ The \textit{hat matrix} or \textit{projection matrix}
 \end{equation*}
 
 is called so as it
-projects \(\vb{y}\) onto the subspace spanned by \(\vb{X}_{i}\)
-often useful in further analysis, as we'll see later.
+projects \(\vb{y}\) onto the subspace spanned by \(\vb{X}_{i}\).
+It is used for defining the \textit{degrees of freedom}. They 
+describes the ability of a model to explain the variance 
+in a data set. For a \(N\times p\) design matrix the number of degrees of freedom for
+OLS is defined to be the trace of the projection matrix:
 
-The variance of the OLS estimate is:
+\begin{align*}
+ \label{eq:1}
+  \numberthis
+  \text{tr}(\vb{H}) &= \text{tr}\left[ \vb{X}\left( \vb{X}^{T}\vb{X} \right)^{-1}\vb{X}^{T}\right]\\
+               &=   \text{tr}\left[ \vb{X}^{T}\vb{X}\left( \vb{X}^{T}\vb{X} \right)^{-1} \right]\\
+  &= \text{tr}\left[ \vb{I} \right]\\
+  &= p
+\end{align*}
+
+An interpretation of minimizing the \(RSS\) is that the area spanned by the
+error at each observation is the smallest possible, as illustrated by~\cref{fig:lq}.
+
+
+The variance of the OLS estimate is~\cite{statelem}:
 
 \begin{equation*}
   \text{Var}(\hat\beta) = \left( \vb{X}^{T}\vb{X} \right)^{-1}\sigma^{2}
 \end{equation*}
-where \(\sigma\) is often estimated by the maximum likelihood estimator (MLE)
+where \(\sigma\) is often estimated by the maximum likelihood estimator:
 
 \begin{equation*}
   \hat\sigma^{2} = \frac{1}{N-p-1}\sum_{i=1}^{N}\left( y_{i} - \hat y_{i} \right)^{2}
@@ -78,23 +94,22 @@ where \(\sigma\) is often estimated by the maximum likelihood estimator (MLE)
 The estimator is then distributed as:
 
 \begin{equation*}
-\hat\beta \sim N\left( \beta, \left( \vb{X}^{T}\vb{X} \right)^{-1}\sigma^{2} \right)
+\hat\beta \sim N\left( \beta, \left( \vb{X}^{T}\vb{X} \right)^{-1}\hat\sigma^{2} \right)
 \end{equation*}
 
-The \(Z\)-score used for hypothesis testing can be found~\cite{statelem} to be:
+Performing hypothesis testing on \(\hat\beta\) is done using the \(z\)-score. It
+is found to be~\cite{statelem} :
 
 \begin{equation*}
   z_{i} = \frac{\hat\beta_{i}}{\hat\sigma\sqrt{v_{i}}}
 \end{equation*}
 where \(v_{i}\) is the \(\text{i}^{\text{th}}\) diagonal element of \(\left( \vb{X}^{T}\vb{X} \right)^{-1}\).
-The corresponding confidence interval is therefore:
+The corresponding confidence interval is then constructed as
 
 \begin{equation*}
   \left( \hat\beta_{i} - z^{1-\alpha}\sqrt{v_{i}}\hat\sigma,  \hat\beta_{i} + z^{1-\alpha}\sqrt{v_{i}}\hat\sigma\right)
 \end{equation*}
 
-An interpretation of minimizing the \(RSS\) is that the area spanned by the
-error at each observation is the smallest possible, as illustrated by~\cref{fig:lq}.
 \begin{figure}[]
   \centering
   \showthe\columnwidth
@@ -116,27 +131,14 @@ For assessing the goodness of fit, the \textit{coefficient of determination}
 
 However, in practice the equivalent measure \textit{mean square error} is used instead.
 
-The degrees of freedom describes the ability of a model to explain the variance
-in a data set. For a \(N\times (p)\) design matrix \(X\) the number of degrees of freedom for
-OLS is defined to be the trace of the projection matrix:
-
-\begin{align*}
- \label{eq:1}
-  \numberthis
-  \text{tr}(H) &= \text{tr}\left[ \vb{X}\left( \vb{X}^{T}\vb{X} \right)^{-1}\vb{X}^{T}\right]\\
-               &=   \text{tr}\left[ \vb{X}^{T}\vb{X}\left( \vb{X}^{T}\vb{X} \right)^{-1} \right]\\
-  &= \text{tr}\left[ \vb{I} \right]\\
-  &= p
-\end{align*}
-
-
 
 \subsection{Ridge Regularization}\label{subsec:Ridge}
 
 \textit{Regularization} solves many shortcomings of OLS.\@
-If the design matrix exhibits multicolinearity  \(\left( X^{T}X
-\right)^{-1}\) is ill-conditioned. Numerical instability makes the solution
-unreliable. By shrinking large coefficients, this is alleviated.
+If the design matrix exhibits colinearity, then  \(\left( X^{T}X
+\right)^{-1}\) is ill-conditioned. The ensuing numerical instability makes the
+OLS solution
+unreliable. By imposing a penalty and shrinking large coefficients, this is alleviated.
 
 Ridge regression minimizes the penalized residual sum of squares:
 
@@ -144,9 +146,9 @@ Ridge regression minimizes the penalized residual sum of squares:
   \hat\beta^{\text{ridge}}  = \argmin_{\beta}\left\{ \sum_{i=1}^{N}\left( y_{i} - \beta_{0} - \sum_{j=1}^{p}x_{ij}\beta_{j} \right)^{2} + \lambda\sum_{j=1}^{p}\beta_{j}^{2} \right\}
 \end{equation*}
 
-where \(\lambda\) is the penalty or regularization coefficient. Since the same
-coefficient is used on all predictors, the predictors have to be standardized by
-centering the mean to 0 and scaling by the standard deviation. The constant term
+where \(\lambda\) is the penalty or regularization parameter. Since the same
+parameter is used on all predictors, the predictors have to be standardized by
+centering the mean to zero and scaling by the standard deviation. The constant term
 is then found analytically as:
 
 \begin{equation*}
@@ -164,7 +166,7 @@ Adding the constant term \(\lambda\) to the diagonal of \(\vb{X}^{T}\vb{X}\) mak
 the matrix inversion better conditioned.
 
 Using singular value decomposition, the ridge estimation coefficient can be
-written as CITE:
+written as~\cite{statelem}:
 
 \begin{equation*}
   \vb{X}\hat\beta^{\text{ridge}} = \sum_{j=1}^{p} \vb{u}_{j}\frac{d_{j}^{2}}{d_{j}^{2}+ \lambda}\vb{u}_{j}^{T}\vb{y}
@@ -184,6 +186,10 @@ same derivation as in~\eqref{eq:1}:
   &= \text{tr}\left[ \vb{X}\left( \vb{X}^{T}\vb{X}  - \lambda \vb{I}\right)^{-1}\vb{X}^{T}\right]\\
                      &= \sum_{j=1}^{p}\frac{d_{j}^{2}}{d_{j}^{2}+\lambda}
 \end{align*}
+
+This is a monotone decreasing function of \(\lambda\). Although the \(p\)
+parameters are fit, their fitting is restricted by \(\lambda\), decreasing the
+effective degrees of freedom.
 
 \subsection{Lasso Regularization}\label{subsec:Lasso}
 Lasso regularization is almost identical in construction as Ridge, but resulting
@@ -213,14 +219,14 @@ loss function will be \textit{mean square error} (MSE):
 
 The training error will in general be smaller than the test error, as the model
 is constructed to minimize the error of the seen training data. To get a deeper
-understanding, we decompose the loss function:
+understanding, we try to decompose the loss function:
 
 \begin{align*}
   \text{MES}(\vb{y}, \vb{\hat{y}}) &= \EX\left[ \left( \vb{y} - \vb{\hat{y}} \right)^{2} \right]\\
-  \intertext{substituting the true relationship \(f\) for \(\vb{y}\) and \(\hat f\) for \(\vb{\hat{y}}\)
+  \intertext{Substituting the true relationship \(f\) for \(\vb{y}\) and \(\hat f\) for \(\vb{\hat{y}}\)
   gives us the slightly more manageable form}
   &= \EX\left[ \left( f + \varepsilon - \hat f \right)^{2} \right]\\
-    \intertext{inserting \(\EX[\hat f]\) lets us split the equation up into}
+    \intertext{Inserting \(\EX[\hat f]\) lets us split the equation up into}
   &= \EX\left[ \left( f + \varepsilon - \hat f + \EX[\hat f] - \EX[\hat f] \right)^{2} \right]\\
                                    &= \EX\left[\left( f - \EX\{\hat f\} \right)^{2}\right] + \EX\left[ \left( \EX\{\hat f\} - \hat f \right)^{2} \right]\\
   &\quad + \EX[\varepsilon^{2}] + \text{terms}\\
@@ -229,10 +235,12 @@ understanding, we decompose the loss function:
   &= \text{bias}(\hat f)^{2} + \text{Var}[\hat f]  + \sigma^{2}
 \end{align*}
 
-The first term is the bias, the difference between the actual value and the
+The first term is the squared bias, the difference between the actual value and the
 predicted value. The second term is the variance, the expected deviation of
 \(\hat f\) around its mean. The final term is the irreducible error due to
-inherent noise of the observations.
+inherent noise of the observations. Nothing can be done with the irreducible
+error, but both bias and variance can be decreased. Doing so, however, will
+almost invariably lead to an increase in the other. 
 
 To illustrate this in practice, Monte Carlo simulations were run using OLS on
 the Franke function as described later. 1000 simulations were run, and the mean
@@ -240,10 +248,18 @@ of the training error and test error plotted in~\cref{fig:bias}. The training
 error and test error are decomposed into square bias and variance in figures~\ref{fig:biastrain}
 and~\ref{fig:biastest}, respectively.
 
-In both cases the bias and hence MSE decreases, but as the model begins to
-overfit the training set, the test bias begins to increase. In both cases the
-variance is continually increasing, but increases more rapidly for the test MSE
-given an even larger total error.
+At low model complexity, bias is always decreased as the model manages to fit
+the data better and better. For training this is always true; a more complex
+model will always with the same points better and better. At some point this
+will lead to overfitting, fitting the model too well to the training set and
+letting generalization suffer as a result. This is causes the test bias to
+increase rapidly.
+
+The variance is always increasing for both test and training MSE. As many
+different models are constructed to randomly varying data, they will tend to
+differ. As the model complexity increases, each model will fit each own data
+better and better, increasing the difference between the different model, and
+hence the variance. 
 
 \begin{figure}[]
   \centering
@@ -267,8 +283,8 @@ given an even larger total error.
 squared bias is added to the variance, the sum is exactly as the mean of the
 Monte Carlo simulations. As the random error is unknown, the actual training MSE
 lies slighty higher. The bias decreases as the model complexity increases as the
-model is better to explain the variance. However, as the model fits the training
-error better and better, the variance increases.}
+model is better to explain the variance. However, as the each model fits the training
+data better and better, difference between the models increases, and so the variance increases.}
 \end{figure}
 
 
@@ -295,6 +311,7 @@ cross validation. The data set is randomly shuffled and split into \(k\) folds.
 Training takes place on \(k-1\) parts of the data while the remaining
 \(k^{\text{th}}\) part is used for testing. This is repeated for \(k\) times,
 giving \(k\) different estimates of the model coefficients and test error.
+Usual values for \(k\) are \(5\) and \(10\).
 
 The cross validation estimate of the prediction error is~\cite{statelem}:
 
@@ -305,11 +322,9 @@ The cross validation estimate of the prediction error is~\cite{statelem}:
 where \(\hat f^{\kappa(i)}\) denotes the model fit with the \(k^{\text{th}}\)
 part of the model removed.
 
-Usual values for \(k\) is \(5\) or \(10\). For the rest of the paper, we will
-only use \(k=5\) and usually samples of \(100\) observations. 
 
 When selecting the best model, we use the ``one standard error'' rule where the
 simplest model within one standard error of the best model is chosen. As the
-``best'' model is not significantly better than the simpler model, this rule
+model with minimum MSE is not significantly better than the simpler model, this rule
 errs on the side of accuracy for the sake of simplicity. 
 

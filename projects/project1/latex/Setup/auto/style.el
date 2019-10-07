@@ -2,7 +2,7 @@
  "style"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-package-options
-                     '(("inputenc" "utf8") ("babel" "norsk" "english") ("parskip" "parfill") ("geometry" "margin=0.9in") ("microtype" "final") ("tikz-feynman" "compat=1.1.0") ("caption" "font={scriptsize}") ("mdframed" "framemethod=TikZ") ("tcolorbox" "listings" "theorems" "skins" "breakable") ("cleveref" "nameinlink")))
+                     '(("inputenc" "utf8") ("babel" "norsk" "english") ("parskip" "parfill") ("geometry" "margin=0.9in") ("microtype" "final") ("nth" "super") ("tikz-feynman" "compat=1.1.0") ("caption" "font={scriptsize}") ("mdframed" "framemethod=TikZ") ("tcolorbox" "listings" "theorems" "skins" "breakable") ("cleveref" "nameinlink")))
    (add-to-list 'LaTeX-verbatim-environments-local "lstlisting")
    (add-to-list 'LaTeX-verbatim-environments-local "minted")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "lstinline")
@@ -24,6 +24,7 @@
     "microtype"
     "enumitem"
     "siunitx"
+    "nth"
     "fancyhdr"
     "simpler-wick"
     "physics"

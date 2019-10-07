@@ -5,3 +5,6 @@
 
 # FYSSTK4155
 Currently shows status for project 1.
+All tests can be run by running `pytest`. Mutation testing is more complicated, requiring `cosmic-ray`. 
+It is a very time consuming process, and is recommended to only run if necessary. The results from a previous
+run is available in the `first.sqlite` file.

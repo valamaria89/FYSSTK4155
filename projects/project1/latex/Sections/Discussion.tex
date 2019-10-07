@@ -11,7 +11,7 @@
   and \(y^{5}\) with all interactions. The highest order of \(x\) is visualized
   by color and highest order of \(y\) is visualized by the circle size. Since many
   models have the same degree of freedom, points overlap. The clear trend is
-  that more complex models give lower MSE.\@ Note that the test MSE is not shown.}
+  that more complex models give lower MSE.\@ The test MSE is not shown.}
 \end{figure}
 
 The training MSE of running OLS on the Franke function is shown
@@ -21,7 +21,7 @@ the effect of increasing \(x\) and \(y\) independently, their degrees have been
 visualized using color and circle radius, respectively.
 
 As expected the training MSE is monotonically decreasing as the degrees of
-freedom is increasing. This decrease is independent on whether the increase
+freedom is increasing. This decrease is independent of whether the increase
 happens in \(x\) or \(y\).
 
 However, training error is not useful as we are unable to judge whether the
@@ -32,7 +32,7 @@ possible in a more realistic scenario, but here it gives an opportunity to check
 how k-fold CV performs.
 
 The training MSE behaves exactly as expected. The more the degrees of freedom,
-the better the data is fitted, and the smaller the error becomes. The CV had low
+the better the data is fitted, and the smaller the error becomes. The CV has low
 variance, as can be seen from the error bars, and it too decreases as the
 degrees of freedom increases.
 
@@ -54,7 +54,7 @@ without creating visual clutter.
   \centering
   \includegraphics[]{figures/olsmse.png}
   \caption{\label{fig:olsmse} The mean square error for training, testing and
-    outsample testing using 5 fold cross validation on a sample of 100
+    out of sample testing using 5 fold cross validation on a sample of 100
     observations. The training error has error bars showing the CV
     distribution, while for the others the mean of the cross
     validations are shown as their variance is massive. All models of degree up to \(5\) including interactions
@@ -66,13 +66,27 @@ without creating visual clutter.
 the best model for each error set using the ``one standard error rule''. }
 \end{figure}
 
+The \(R^{2}\) coefficient could be used to estimate the error in
+our models. However, it is equivalent to a normalized version of MSE. As we are
+always comparing the same data and same response, nothing is gained from using it.
+For completeness, a simplified version of~\cref{fig:olsmse} using \(R^{2}\) is
+shown in figure~\cref{fig:olsr2}. It tells us qualitatively the same in an
+quantitative different manner, and will not be repeated in further analysis.
+
+\begin{figure}[]
+  \centering
+  \includegraphics[ ]{figures/olsr2.png}
+  \caption{\label{fig:olsr2} \(R^{2}\) coefficient plotted against degree of
+    freedom of OLS for both test and training sets. It is the inverted version
+    of~\cref{fig:olsmse}}
+\end{figure}
+
 In~\cref{fig:olsci} the \(95\%\) confidence intervals of the coefficients of the
-best models are plotted. The constant coefficient is highly significant, and so
+best model are plotted. The constant coefficient is highly significant, and so
 are the terms \(x\) and \(xy\). The remaining coefficients for \(y, y^{2}\) and
 \(y^{3}\) are not as significant. This is due to the fact that they are all
 correlated with each other; and increase in \(y\) is invariably followed by an
-increase in \(y^{2}\) and \(y^{3}\). We also notice that the coefficients are
-centered around zero.
+increase in \(y^{2}\) and \(y^{3}\).
 \begin{figure}[]
   \centering
   \includegraphics[]{figures/ols_ci.png}
@@ -97,22 +111,22 @@ complex terms have massive coefficients, with \(\hat\beta_{x^{5}y^{5}} \propto
 even switching sign from one model to the next. }
 \end{figure}
 
-Why does this happen? More insight is gained when we plot the expected, or naive
+Why does this happen? More insight is gained when plotting the naive, or expected
 degrees of freedom \(p\) against the effective degrees of freedom
-\(\text{tr}\left(\vb{H}\right)\) computed numerically. These are plotted
+\(\text{tr}\left(\vb{H}\right)\) computed numerically. This is done 
 in~\cref{fig:effectivedf}. As shown in~\cref{eq:1} the expected degrees of
 freedom is \(p\), but the plot shows that this is only true for small values of
 \(p\). At around \(p=15\) the computed trace begins to deviate, and it
-doesn't take long before they begin to deviate wildly. Almost unequivocally, the
+doesn't take long before they deviate wildly. Almost unequivocally, the
 effective degrees of freedom is lower than the expected values. This can be
-interpreted as the design matrix containing lesser information than what we
-would expect.
+interpreted as the design matrix containing less information than what is
+expected.
 
 \begin{figure}[]
   \centering
   \includegraphics[]{figures/effectivedf.png}
   \caption{\label{fig:effectivedf} Effective degrees of freedom computed
-    numerically as the trace of \(\vb{X}^{T}\vb{X}\) versus the expected degrees
+    numerically as the trace of \(\vb{H}\) versus the expected degrees
     of freedom \(p\). For high \(p\) the effective degrees of freedom deviate,
     becoming progressively lower.}
 \end{figure}
@@ -158,20 +172,6 @@ the explaining power of the model in question.
   all other terms, especially for the interaction terms.}
 \end{figure}
 
-As a side note, the \(R^{2}\) coefficient could be used to estimate the error in
-our models. However, it is equivalent to a normalized version of MSE and we are
-always comparing the same data and same response, we gain nothing from using it.
-For completeness, a simplified version of~\cref{fig:olsmse} using \(R^{2}\) is
-shown in figure~\cref{fig:olsr2}. It tells us qualitatively the same in an
-quantitative different manner, and will not be repeated in further analysis.
-
-\begin{figure}[]
-  \centering
-  \includegraphics[ ]{figures/olsr2.png}
-  \caption{\label{fig:olsr2} \(R^{2}\) coefficient plotted against degree of
-    freedom of OLS for both test and training sets. It is the inverted version
-    of~\cref{fig:olsmse}}
-\end{figure}
 
 \subsubsection{Ridge Regularization}
 \label{sec:ridge-regularization}
@@ -194,7 +194,7 @@ can therefore be more confident in the numerical stability of the Ridge estimate
 
 For modeling the Franke function the maximal model of degree \(5\) using all
 interactions is fitted for a range of \(\lambda\)s. The same analysis performed
-on \(OLS\) is repeated and shown in~\cref{fig:ridgemse}. Increasing the
+on OLS is repeated and shown in~\cref{fig:ridgemse}. Increasing the
 \(\lambda\) from \(0\) initially causes the MSE to rise and increase variability
 of the cross validation samples before falling and causing train, test and out
 of sample MSE to converge. Again the test and out of sample agrees on the best
@@ -211,17 +211,17 @@ model using \(\lambda \approx 5\times 10^{-2}\).
 
 Ridge regularization penalizes large coefficients, as can be seen
 by~\cref{fig:ridgecoeff} and~\cref{fig:ridgecoeffevo}. As \(\lambda\) increases,
-all of the coefficients decreases, but the large coefficients shrink the
+all of the coefficients decrease, but the large coefficients shrink the
 fastest. In addition there are no longer any large-but-opposite coefficients
 that the OLS was plagued by, visible from the lack of the ``fan'' pattern of coefficients
 at large term degrees. 
 
 As \(\lambda\) increases, coefficients sometimes rises after being shrunk, or
-changing sign. This is clear from the lower symlog-plot
+changing sign, as is seen in the lower symlog-plot
 in~\cref{fig:ridgecoeffevo}. This is due to the collinearity between the terms.
 As one term is decreased, the variance it explained can be given to one of its
 correlated variables, causing them to increase or change sign. This dance
-between the coefficients happens no matter what value  \(\lambda\) has
+between the coefficients happens no matter the value of  \(\lambda\).
 
 
 \begin{figure}[]
@@ -248,7 +248,7 @@ between the coefficients happens no matter what value  \(\lambda\) has
 
 \subsubsection{Lasso Regularization}
 
-The regularization methods of Ridge and Lasso are so very similar, but yet their
+The regularization methods of Ridge and Lasso are so very similar, yet their
 effects are surprisingly different. Performing the identical analysis as done
 with Ridge gives the MSE in~\cref{fig:lassomse}. Instead of decreasing the MSE
 as Ridge, the MSE is continually increased for larger \(\alpha\). When
@@ -271,12 +271,12 @@ why this happens.
 
 Another difference from Ridge is that the large coefficients quickly gets set to
 zero, as seen from~\cref{fig:lassocoeff} and~\cref{fig:lassocoeff_evo}. The
-smaller degree terms experiences a smaller penality, and thus stays larger over
+terms of smaller degree experience a smaller penality, thus staying larger over
 larger ranges of \(\alpha\). The coefficient plot gains an ``inverted V'' shape
-in contrast to OLS' fan shape and Ridge's uniform.
+in contrast to OLS' fan shape and Ridge's uniform shape.
 
-The number of coefficients set to exactly zero increases quickly.
-\cref{fig:zeros} shows the total number of zeros. At \(\alpha=10^{-4}\), \(6\)
+As \(\alpha\) is increased, the number of coefficients set to exactly zero increases rapidly.
+\cref{fig:zeros} shows the total number of zeros. At \(\alpha=10^{-4}\), six
 coefficients are already zero, while at \(\alpha\gtrsim 0.1\) \textit{all}
 coefficients are set to zero, explaining the MSE plateau.
 
@@ -320,7 +320,7 @@ models is not impressive.
 The OLS training manages to capture the two hills and one valley, but at the
 cost of huge boundary effects. The OLS test model fails at capturing any single
 feature, instead opting to smudging the two hills into one slope and the one
-valley into one long shallow valley.
+valley into a long shallow one.
 
 Ridge and Lasso gives higher order terms ability to express themselves, which is visible
 in the clearer outlines of the features. Lasso has the added benefit of setting
@@ -348,14 +348,14 @@ The real world terrain data has much, much more features than the Franke
 function, so to make the problem somewhat solvable, the terrain is downsampled
 and \(300\) observations are drawn. OLS, Ridge and Lasso are run, and their MSE
 plots shown in figures~\ref{fig:geo_reg_mse}, \ref{fig:geo_ridge_mse},
-\ref{fig:geo_lasso_mse}. Behavior similar to the Franke function is seen. For
+and~\ref{fig:geo_lasso_mse}. Behavior similar to the Franke function is seen. For
 OLS, the training MSE falls just as before and test MSE has a small dip before
 it increases. For Ridge the behavior is similar, but with a huge error and
 variance at very low parameter values. This is probably due to the fact that the
 Ridge and Lasso start out with 15 degree polynomials, and are prone to
 overfitting at low parameter values. The error quickly drops, however, and the
 test error reaches a minimum at a \(\lambda \approx 0.9\). The Lasso error again
-prefers a very low value of \(\alpha\), rising to a plateau for large
+prefers a low value of \(\alpha\), rising to a plateau for large
 \(\alpha\) and being unchanged over the intermediate range.
 
 
@@ -396,7 +396,7 @@ prefers a very low value of \(\alpha\), rising to a plateau for large
 
 The best model of each is shown in~\ref{fig:geocomp}, and again we see
 similar behavior to the Franke modeling. The best OLS training is more
-conservative and we do not see too much boundary issues, while the OLS test
+conservative than before due to the higher model variance, and does not have as severe boundary issues, while the OLS test
 model is much more conservative and barely gives a recognizable outline. 
 
 Both Ridge and Lasso fares better, both managing to capture the mountains in the
@@ -425,10 +425,10 @@ west and the coast lines are captured.}
 There is a tradeoff between a model's ability to fit the terrain and
 overfitting, in this case more severe that one would naively expect. To fit the
 terrain features to any satisfying degree, a very high polynomial degree is
-needed. This in turns gives a very ill conditioned design matrix, giving high
+needed. This in turns gives a ill-conditioned design matrix, giving high
 numerical instability in the predictions of the model, and boundary problems. To
 remedy this regularization is introduced, but this very process shrinks the
-highest degree terms as these are the ones who are the most correlated. This
+high degree terms as these are the ones which are the most correlated. This
 reduces the model's ability to describe finer details, and the explaining power
 of the model decreases. If we try to increase the number of observations to
 better fit the model, then we have to increase the resolution, and more

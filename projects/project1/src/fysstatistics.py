@@ -10,8 +10,33 @@ import warnings
 
 
 class Regressor:
+    """ Base class implementing ordinary least square regression
+
+    Ordinary least square polynomial regression using SVD decomposition.
+    Supports basic analysis features such as variance, degrees of freedom
+    and confidence intervals of β.
+
+    Attributes:
+        response (ndarray): The respones variable to model
+        orders (list of int): The polynomial order of each predictor
+            to use in constructing the design matrix.
+        β (ndarray): The coefficients once the system has been solved.
+        design_matrix (ndarray): The constructed design matrix
+        interactions (bool): Whether or not use use interactions between
+            the polynomials.
+        max_interaction (int): The maximum order of interactions to use.
+            If None, no restriction is used.
+        condition_number (float): The condition number of the projection matrix
+    """
     def __init__(self, predictors: Sequence[ndarray],
                  response: ndarray) -> None:
+        """ Initialize the class
+
+        Args:
+            predictors: A sequence of each predictor used for
+                predicting the response.
+            response: The response to model using the predictors
+        """
         if isinstance(predictors, np.ndarray):
             self.predictors = [predictors]
         else:
@@ -19,7 +44,7 @@ class Regressor:
         self.response = response.flatten()
         self.orders: Optional[Sequence[Sequence[int]]] = None
         self.β: Optional[List[float]] = None
-        self.vandermonde: Optional[ndarray] = None
+        self.design_matrix: Optional[ndarray] = None
         self.interactions: bool = False
         self.max_interaction: Optional[int] = None
         self.condition_number = 0
@@ -34,6 +59,8 @@ class Regressor:
                 design matrix. If an element is an int,
                 all lower orders will be used as well.
                 The constant term is always present.
+            interactions: Whether or not to use interactions
+               of the polynomial degrees.
         """
         # Construct the orders to fit
         for i, order in enumerate(orders):
@@ -46,29 +73,56 @@ class Regressor:
         if interactions or max_interaction is not None:
             self.interactions = True
 
-        self.vandermonde = self.design_matrix(self.predictors)
+        design_matrix = self.make_design_matrix(self.predictors)
 
-        if self.vandermonde.shape[0] < self.vandermonde.shape[1]:
+        if design_matrix.shape[0] < design_matrix.shape[1]:
             warnings.warn("Number of features surpasses number of samples")
 
-        self.vandermonde = self.standardize(self.vandermonde)
+        self.design_matrix = self.standardize(design_matrix)
 
-        self.β = self.solve(self.vandermonde, self.response)
+        self.β = self.solve(self.design_matrix, self.response)
         return self.β
 
     def standardize(self, matrix: ndarray) -> ndarray:
-        # Standardize the matrix
-        mean = np.mean(matrix[:, 1:], axis=0)
-        std = np.std(matrix[:, 1:], axis=0)
+        """ Standardize the predictors of the matrix
 
-        def standardizer(mat):
+        Shifts the mean of each column to zero and scales by the
+        standard deviation.
+
+        Also sets the `standardizer` attribute.
+
+        Args:
+            matrix: The matrix to standardize
+        Returns:
+            The standardized matrix.
+        """
+        # Standardize the matrix
+        mean = matrix[:, 1:].mean(axis=0)
+        std = matrix[:, 1:].std(axis=0)
+
+        def standardizer(mat: ndarray) -> ndarray:
             # Ignore the first column of constant term
             mat[:, 1:] = (mat[:, 1:] - mean[np.newaxis, :])/std[np.newaxis, :]
             return mat
+
         self.standardizer = standardizer
         return standardizer(matrix)
 
-    def design_matrix(self, predictors) -> ndarray:
+    def make_design_matrix(self, predictors: List[ndarray]) -> ndarray:
+        """ Construct the design matrix given predictors and orders
+
+        The design matrix has the construction
+
+            1 X X² ... X^N Y Y² ... Y^m XY X²Y ... X^NY XY² X²Y² ... X^NY^N
+
+        Uses the attributes `orders` and `max_interaction`
+
+        Args:
+           predictors: The predictors, or basis functions, to use to
+               construct the design matrix.
+        Returns:
+            The design matrix
+        """
 
         matrix = vandermonde(predictors, self.orders)
 
@@ -78,7 +132,16 @@ class Regressor:
                                       self.max_interaction)
         return matrix
 
-    def solve(self, design_matrix, response) -> ndarray:
+    def solve(self, design_matrix: ndarray, response: ndarray) -> ndarray:
+        """ Solve the system using inversion or SVD
+
+        Args:
+            design_matrix: The matrix to solve.
+            response: The response to model
+        Returns:
+            The solution β
+
+        """
         self.condition_number = np.linalg.cond(design_matrix)
         if self.condition_number < sys.float_info.epsilon:
             β = lin_reg_inv(design_matrix, response)
@@ -88,6 +151,9 @@ class Regressor:
 
     def predict(self, predictors: Union[ndarray, Sequence[ndarray]]) -> ndarray:
         """ Predict the response based on fit
+
+        The resulting prediction matrix is standardized using the same
+        standardization applied to the design matrix
 
         Args:
             predictors: The predictors to predict from.
@@ -106,7 +172,7 @@ class Regressor:
             shape = predictors[0].shape
             predictors = [predictor.flatten() for predictor in predictors]
 
-        X = self.design_matrix(predictors)
+        X = self.make_design_matrix(predictors)
         X = self.standardizer(X)
 
         # If the constant coefficient is taken care of elsewhere
@@ -183,14 +249,15 @@ class Regressor:
     @property
     def sigma2(self) -> float:
         """ Estimate of σ² """
-        N, p = self.vandermonde.shape
+        N, p = self.design_matrix.shape
         # Note that N - p = N - (k+1)
         std_err = 1/(N - p) * self.SSE
         return std_err
 
     @property
     def var(self) -> ndarray:
-        X = self.vandermonde
+        """ The variance Var(β) """
+        X = self.design_matrix
         N, p = X.shape
         Σ = np.linalg.inv(X.T@X)
         return np.diag(Σ)*self.sigma2
@@ -200,7 +267,7 @@ class Regressor:
         tscore = self.β/np.sqrt(self.var)
         return tscore
 
-    def ci(self, alpha) -> ndarray:
+    def ci(self, alpha: float) -> ndarray:
         """ Compute the 1-2α confidence interval
 
         Assumes t distribution of N df.
@@ -211,7 +278,7 @@ class Regressor:
             The lower and upper limits of the CI as p×2 matrix
             where p is the number of predictors + intercept.
         """
-        X = self.vandermonde
+        X = self.design_matrix
         N, p = X.shape
         zalpha = np.asarray(stats.t.interval(alpha, N - p))
         σ = np.sqrt(self.var)
@@ -221,6 +288,7 @@ class Regressor:
         return ci
 
     def betadict(self) -> Dict[str, float]:
+        """ Get the terms of β and their coefficients """
         assert self.β is not None
         assert self.orders is not None
         coeffs = {'const': self.β[0]}
@@ -244,29 +312,74 @@ class Regressor:
         return coeffs
 
     def df(self) -> ndarray:
-        X = self.vandermonde
+        """ Compute the degrees of freedom as tr(H) """
+        X = self.design_matrix
         assert X is not None
         H = X@np.linalg.inv(X.T@X)@X.T
         return np.trace(H)
 
 
 class Ridge(Regressor):
+    """ Implement Ridge regularization on top of OLS
+    
+    Attributes:
+        Same as Regressor.
+        parameter: The regularization parameter
+    """
     def __init__(self, predictors: Sequence[ndarray],
                  response: ndarray,
                  parameter: float) -> None:
+        """ Initialize the matrix
+
+        Args:
+            predictors: A sequence of each predictor used for
+                predicting the response.
+            response: The response to model using the predictors
+            parameter: The regularization parameter
+        """
         super().__init__(predictors, response)
         self.parameter = parameter
 
-    def design_matrix(self, predictors) -> ndarray:
-        matrix = super().design_matrix(predictors)
+    def make_design_matrix(self, predictors: ndarray) -> ndarray:
+        """ Construct the design matrix given predictors and orders
+
+        Does not have a constant term
+
+        The design matrix has the construction
+
+            X X² ... X^N Y Y² ... Y^m XY X²Y ... X^NY XY² X²Y² ... X^NY^N
+
+        Uses the attributes `orders` and `max_interaction`
+
+        Args:
+           predictors: The predictors, or basis functions, to use to
+               construct the design matrix.
+        Returns:
+            The design matrix
+        """
+
+        matrix = super().make_design_matrix(predictors)
         # The constant coefficient can be removed
         matrix = matrix[:, 1:]
         return matrix
 
     def standardize(self, matrix: ndarray) -> ndarray:
+        """ Standardize the predictors of the matrix
+
+        Shifts the mean of each column to zero and scales by the
+        standard deviation. Takes into account that the design matrix
+        has to constant term.
+
+        Also sets the `standardizer` attribute.
+
+        Args:
+            matrix: The matrix to standardize
+        Returns:
+            The standardized matrix.
+        """
         # Standardize the matrix
-        mean = np.mean(matrix, axis=0)
-        std = np.std(matrix, axis=0)
+        mean = matrix.mean(axis=0)
+        std = matrix.(axis=0)
 
         def standardizer(mat):
             # Ignore the first column of constant term
@@ -275,24 +388,51 @@ class Ridge(Regressor):
         self.standardizer = standardizer
         return standardizer(matrix)
 
-    def solve(self, design_matrix, response) -> ndarray:
+    def solve(self, design_matrix: ndarray, response: ndarray) -> ndarray:
+        """ Solve the system using SVD
+
+        Adds regularization along the diagonal of X^T X
+
+        Args:
+            design_matrix: The matrix to solve.
+            response: The response to model
+        Returns:
+            The solution β
+        """
+
         X = design_matrix
         y = response
-        # if np.linalg.cond(self.vandermonde) < sys.float_info.epsilon:
+        # if np.linalg.cond(self.design_matrix) < sys.float_info.epsilon:
         β = np.linalg.inv(X.T@X + self.parameter*np.eye(X.shape[1]))@X.T@y
         # The constant is given by 1/N Σ y_i
         β = np.array([np.mean(y), *β])
         return β
 
     def df(self) -> ndarray:
-        X = self.vandermonde
+        X = self.design_matrix
         assert X is not None
         H = X@np.linalg.inv(X.T@X + self.parameter*np.eye(X.shape[1]))@X.T
         return np.trace(H)
 
 
 class Lasso(Ridge):
-    def solve(self, design_matrix, response) -> ndarray:
+    """ Implements Lasso regularizaion
+
+    Leverages the code of Ridge, only changing how the system is solved.
+    The solving is relegated to sklearn.Lasso
+
+    """
+    def solve(self, design_matrix: ndarray, response: ndarray) -> ndarray:
+        """ Solve the system using sklearn.Lasso
+
+        Adds regularization along the diagonal of X^T X
+
+        Args:
+            design_matrix: The matrix to solve.
+            response: The response to model
+        Returns:
+            The solution β
+        """
         X = design_matrix
         y = response
         clf = skLasso(alpha=self.parameter, fit_intercept=False)
@@ -332,6 +472,17 @@ def vandermonde(predictors: Sequence[ndarray],
 def add_interactions(vandermonde: ndarray,
                      orders: Sequence[Sequence[int]],
                      max_interaction: Optional[int] = None) -> ndarray:
+    """ Add interaction terms to the vandermonde matrix
+
+    Args:
+        vandermonde: The polynomial vandermonde matrix to use as
+            basis for creating the interactions.
+        orders: The orders corresponding to each column in the matrix
+        max_interaction: The maximum degree of the interacting polynomial
+            If None, no restriction is used
+    Returns:
+        The complete matrix.
+    """
     # First column is constant term
     assert len(orders) == 2, "Only two term interactions supported"
     offset = len(orders[0])
@@ -345,12 +496,13 @@ def add_interactions(vandermonde: ndarray,
     return vandermonde
 
 
-#@jit(nopython=True)
-def lin_reg_inv(X, y):
+def lin_reg_inv(X: ndarray, y: ndarray):
+    """ Solve the system Xβ = y by matrix inversion"""
     return np.linalg.inv(X.T@X)@X.T@y
 
 
 def lin_reg_svd(x: ndarray, y: ndarray) -> ndarray:
+    """ Solve the system Xβ = y by singular value decomposition"""
     u, s, v = scl.svd(x)
     return v.T @ scl.pinv(scl.diagsvd(s, u.shape[0], v.shape[0])) @ u.T @ y
 

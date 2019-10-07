@@ -3,7 +3,7 @@
 
 \subsection{Simple Terrain Approximation}
 
-Instead of jumping straight to real world terrain data, we'll explore how
+Before modeling real world terrain data, we will explore how
 polynomial regression works on synthetic terrain. The \textit{Franke function}
 has features similar to those one would expect from terrain with smooth hills
 and valleys. For simplicity we'll only to model the domain \(x, y \in [0,
@@ -22,7 +22,7 @@ and valleys. For simplicity we'll only to model the domain \(x, y \in [0,
 \label{sec:real-world-terrain}
 
 The real world terrain data was retrieved from
-\href{https://earthexplorer.usgs.gov/}{Earth Explorer} over the Vestfold area.
+\href{https://earthexplorer.usgs.gov/}{Earth Explorer} over the eastern Norway.
 
 I found it unrealistic for the polynomial model to be able to fit the terrain to
 any reasonable degree, so I decided to down-sample the terrain by a factor of
@@ -31,7 +31,7 @@ any reasonable degree, so I decided to down-sample the terrain by a factor of
 \begin{figure}[]
   \centering
   \includegraphics[]{figures/terrain.png}
-  \caption{\label{fig:terrain} Digital terrain data over Vestfold. The plot on
+  \caption{\label{fig:terrain} Digital terrain data over eastern Norway. The plot on
     the right is down-sampled by a factor \(50\). The terrain is colored by
     height using the
     \href{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}{turbo
@@ -66,4 +66,4 @@ call to \texttt{Sampler}.
 
 All of the core code is tested against equivalent methods in the sklearn
 library, while much of the ``bookkeeping'' code is untested to save time. The
-tests themselves are tested using mutation testing with the Cosmic Ray package.
+tests themselves are tested with mutation testing using the \href{Cosmic Ray}{https://github.com/sixty-north/cosmic-ray} package.

@@ -115,7 +115,7 @@ def test_regressor_2d(franke_noisy):
     Z_hat = reg.predict([X, Y])
 
     # SKlearn for comparison
-    V = reg.vandermonde
+    V = reg.design_matrix
     clf = LinearRegression(fit_intercept=False).fit(V, Z.flatten())
     assert_allclose(clf.coef_, beta)
     Z_tilde = clf.predict(V).reshape(Z_hat.shape)
@@ -127,7 +127,7 @@ def test_regressor_2d(franke_noisy):
     assert_allclose(mse, reg.mse())
 
     # Test confidence interval
-    df = pd.DataFrame(data=reg.vandermonde, columns=['constant', 'x1', 'x2', 'x3', 'x4', 'x5',
+    df = pd.DataFrame(data=reg.design_matrix, columns=['constant', 'x1', 'x2', 'x3', 'x4', 'x5',
                                                         'y1', 'y2', 'y3', 'y4', 'y5'])
     df['response'] = reg.response
     res = smf.ols("response ~ x1 + x2 + x3 + x4 + x5 + y1 + y2 + y3 + y4 + y5", data=df).fit()
@@ -147,7 +147,7 @@ def test_ridge(franke_noisy, alpha):
     Z_hat = reg.predict([X, Y])
 
     # SKlearn for comparison
-    V = reg.vandermonde
+    V = reg.design_matrix
     clf = Ridge(alpha=alpha, fit_intercept=False).fit(V, Z.flatten())
     intercept = beta[0]
     assert_allclose(clf.coef_, beta[1:])
@@ -162,7 +162,7 @@ def test_interactions():
     z = np.asarray([3, 6, 8, 10, 12])
     reg = Regressor([x, y], z)
     beta = reg.fit([3, 2], interactions=True)
-    v = reg.vandermonde
+    v = reg.design_matrix
     i = 1
     def test_col(x):
         nonlocal i
@@ -192,7 +192,7 @@ def test_restricted_interactions():
     z = np.asarray([2, 4, 8, 10, 12])
     reg = Regressor([x, y], z)
     beta = reg.fit([3, 2], max_interaction=2)
-    v = reg.vandermonde
+    v = reg.design_matrix
     i = 1
     def test_col(x):
         nonlocal i
@@ -212,7 +212,7 @@ def test_restricted_interactions():
 
     reg = Regressor([x, y], z)
     beta = reg.fit([3, 2], max_interaction=5)
-    v = reg.vandermonde
+    v = reg.design_matrix
     i = 1
     def test_col(x):
         nonlocal i
@@ -259,7 +259,7 @@ def test_design_matrix_normalization(trivial):
     x, y, beta = trivial
     reg = Regressor([x], y)
     reg.fit([3], interactions=False)
-    V = reg.vandermonde
+    V = reg.design_matrix
 
     # 1 along first column
     assert np.sum(V[:, 0], axis=0) == V.shape[0]
