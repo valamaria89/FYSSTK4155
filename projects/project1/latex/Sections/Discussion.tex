@@ -11,13 +11,13 @@
   and \(y^{5}\) with all interactions. The highest order of \(x\) is visualized
   by color and highest order of \(y\) is visualized by the circle size. Since many
   models have the same degree of freedom, points overlap. The clear trend is
-  that more complex models give lower MSE. Note that the test MSE is not shown.}
+  that more complex models give lower MSE.\@ Note that the test MSE is not shown.}
 \end{figure}
 
 The training MSE of running OLS on the Franke function is shown
 in~\cref{fig:olscgrouped}. Polynomials up to \(5^{\text{th}}\) order was used including all possible
 interactions, leading to the ``pile-up'' at a given degree of freedom. To show
-the effect of increasing \(x\) and \(y\) independently, their degrees has been
+the effect of increasing \(x\) and \(y\) independently, their degrees have been
 visualized using color and circle radius, respectively.
 
 As expected the training MSE is monotonically decreasing as the degrees of
@@ -42,7 +42,7 @@ overfitting becomes too severe at about \(27\) df, the test MSE skyrockets off
 the plot. Using the ``one standard error rule'', the optimal model uses a total
 of only \(6\) degrees of freedom.
 
-The out of sample error behaves very similar to the test error. At low df the
+The out of sample error behaves similarly to the test error. At low df the
 test error is too pessimistic, but they come to agree at around \(10\) df.
 It is assuring to see that the best model chosen by the out of sample error is
 the same as the test error's. 
@@ -77,7 +77,7 @@ centered around zero.
   \centering
   \includegraphics[]{figures/ols_ci.png}
   \caption{\label{fig:olsci} 95\% confidence interval for the best model as
-    estimated by the ``one standard error'' rule for test MSE. The constant and
+    estimated by the ``one standard error'' rule for test MSE.\@ The constant and
     \(x\) term are very significant, and so is the interaction term \(xy\). all
     of the \(y\)-terms have larger CI.}
 \end{figure}
@@ -92,8 +92,8 @@ complex terms have massive coefficients, with \(\hat\beta_{x^{5}y^{5}} \propto
   \centering
   \includegraphics[]{figures/olscoeff.png}
   \caption{\label{fig:olscoeff} The coefficients for each term of each model for
-  OLS. As the model becomes more and more complex with larger degrees of
-  freedom, the coefficients fan out, becoming very negative and highly positive,
+  OLS.\@ As the model becomes more and more complex with larger degrees of
+  freedom, the coefficients fan out, becoming highly negative or highly positive,
 even switching sign from one model to the next. }
 \end{figure}
 
@@ -128,7 +128,7 @@ See~\cref{fig:condition}.
   \centering
   \includegraphics[ ]{figures/condition.png}
   \caption{\label{fig:condition} Condition number of the matrix
-    \(\vb{X}^{T}\vb{X}\) for larger \(p\), i.e more columns. A matrix with
+    \(\vb{X}^{T}\vb{X}\) for larger \(p\), i.e. more columns. A matrix with
     interactions follows the same pattern as one without, constantly increasing
     for larger \(p\). The apparent plateau at \(10^{18}\) is due to the y-axis
     being restricted as terms blow up to \(10^{50}\)}
@@ -189,7 +189,7 @@ can therefore be more confident in the numerical stability of the Ridge estimate
     columns \(p\) in \(\vb{X}\). The OLS has \(\lambda = 0\) and experiences
     larger condition numbers for larger \(p\). Ridge uses \(\lambda = 10^{-2}\)
     causing the matrices to be better conditioned with the condition number
-    leveling off at at \(p\approx 10\)}
+    leveling off at \(p\approx 10\)}
 \end{figure}
 
 For modeling the Franke function the maximal model of degree \(5\) using all
@@ -255,7 +255,7 @@ as Ridge, the MSE is continually increased for larger \(\alpha\). When
 \(\alpha\) gets sufficiently large at \(\alpha>0.1\), the error plateaus. As a
 result, the test MSE recommends the smallest \(\alpha\) available. In contrast, the out of sample MSE
 recommends a small regularization at \(\alpha\approx 8\cross 10^{-2}\). Weirdly enough, the out of sample
-MSE is consistently \textit{below} both the test and training MSE. It is unknown
+MSE is consistently \textit{below} both the test and training MSE.\@ It is unknown
 why this happens.
 
 \begin{figure}[]
@@ -318,7 +318,7 @@ amount of features found in the Franke function that can be captured by the
 models is not impressive.
 
 The OLS training manages to capture the two hills and one valley, but at the
-cost of huge boundary effects. The OLS test model fails at capturing any one
+cost of huge boundary effects. The OLS test model fails at capturing any single
 feature, instead opting to smudging the two hills into one slope and the one
 valley into one long shallow valley.
 
@@ -389,7 +389,7 @@ prefers a very low value of \(\alpha\), rising to a plateau for large
     regularization parameter for the downsampled terrain using \(15\) degree
     polynomials with all interactions. Even at very small parameter values the
     largest coefficients are set to zero. Afterwards increasing the parameter
-    have very little effect before too many coefficients get set to zero and the
+    has very little effect before too many coefficients get set to zero and the
    MSE rises. As a result, the optimal model uses the smallest possible value of
  \(\alpha\). The plateau coming up on the right is left out of the plot}
 \end{figure}

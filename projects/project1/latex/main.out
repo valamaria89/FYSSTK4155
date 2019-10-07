@@ -1,21 +1,23 @@
-\BOOKMARK [0][-]{section*.1}{ FYSSTK4155 \040[25pt] 0.5pt [0.4cm] Project 1 - Regression}{}% 1
-\BOOKMARK [1][-]{section*.2}{Contents}{section*.1}% 2
-\BOOKMARK [1][-]{section*.3}{Introduction}{section*.1}% 3
-\BOOKMARK [1][-]{section*.4}{Theory}{section*.1}% 4
-\BOOKMARK [2][-]{section*.5}{Ordinary Least Squares}{section*.4}% 5
-\BOOKMARK [2][-]{section*.9}{Ridge Regularization}{section*.4}% 6
-\BOOKMARK [2][-]{section*.10}{Lasso Regularization}{section*.4}% 7
-\BOOKMARK [2][-]{section*.11}{Bias Variance Tradeoff}{section*.4}% 8
-\BOOKMARK [2][-]{section*.15}{Cross Validation}{section*.4}% 9
-\BOOKMARK [1][-]{section*.16}{Method}{section*.1}% 10
-\BOOKMARK [2][-]{section*.17}{Simple Terrain Approximation}{section*.16}% 11
-\BOOKMARK [2][-]{section*.19}{Real World Terrain Data}{section*.16}% 12
-\BOOKMARK [2][-]{section*.21}{Implementation Details}{section*.16}% 13
-\BOOKMARK [1][-]{section*.22}{Results and Discussion}{section*.1}% 14
-\BOOKMARK [2][-]{section*.23}{Modeling the Franke Function}{section*.22}% 15
-\BOOKMARK [3][-]{section*.24}{Ordinary Least Squares}{section*.23}% 16
-\BOOKMARK [3][-]{section*.33}{Ridge Regularization}{section*.23}% 17
-\BOOKMARK [3][-]{section*.38}{Lasso Regularization}{section*.23}% 18
-\BOOKMARK [2][-]{section*.43}{Comparison}{section*.22}% 19
-\BOOKMARK [2][-]{section*.45}{Terrain Data}{section*.22}% 20
-\BOOKMARK [1][-]{section*.50}{Conclusion}{section*.1}% 21
+\BOOKMARK [0][-]{section*.2}{ FYSSTK4155 \040[25pt] 0.5pt [0.4cm] Project 1 - Regression}{}% 2
+\BOOKMARK [1][-]{section*.1}{Abstract}{section*.2}% 1
+\BOOKMARK [1][-]{section*.3}{Contents}{section*.2}% 3
+\BOOKMARK [1][-]{section*.4}{Introduction}{section*.2}% 4
+\BOOKMARK [1][-]{section*.5}{Theory}{section*.2}% 5
+\BOOKMARK [2][-]{section*.6}{Ordinary Least Squares}{section*.5}% 6
+\BOOKMARK [2][-]{section*.10}{Ridge Regularization}{section*.5}% 7
+\BOOKMARK [2][-]{section*.11}{Lasso Regularization}{section*.5}% 8
+\BOOKMARK [2][-]{section*.12}{Bias Variance Tradeoff}{section*.5}% 9
+\BOOKMARK [2][-]{section*.16}{Cross Validation}{section*.5}% 10
+\BOOKMARK [1][-]{section*.17}{Method}{section*.2}% 11
+\BOOKMARK [2][-]{section*.18}{Simple Terrain Approximation}{section*.17}% 12
+\BOOKMARK [2][-]{section*.20}{Real World Terrain Data}{section*.17}% 13
+\BOOKMARK [2][-]{section*.22}{Implementation Details}{section*.17}% 14
+\BOOKMARK [1][-]{section*.23}{Results and Discussion}{section*.2}% 15
+\BOOKMARK [2][-]{section*.24}{Modeling the Franke Function}{section*.23}% 16
+\BOOKMARK [3][-]{section*.25}{Ordinary Least Squares}{section*.24}% 17
+\BOOKMARK [3][-]{section*.34}{Ridge Regularization}{section*.24}% 18
+\BOOKMARK [3][-]{section*.39}{Lasso Regularization}{section*.24}% 19
+\BOOKMARK [2][-]{section*.44}{Comparison}{section*.23}% 20
+\BOOKMARK [2][-]{section*.46}{Terrain Data}{section*.23}% 21
+\BOOKMARK [1][-]{section*.51}{Conclusion}{section*.2}% 22
+\BOOKMARK [1][-]{section*.52}{References}{section*.2}% 23

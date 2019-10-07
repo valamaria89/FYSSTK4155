@@ -81,7 +81,7 @@ The estimator is then distributed as:
 \hat\beta \sim N\left( \beta, \left( \vb{X}^{T}\vb{X} \right)^{-1}\sigma^{2} \right)
 \end{equation*}
 
-The \(Z\)-score used for hypothesis testing can be found CITE to be
+The \(Z\)-score used for hypothesis testing can be found~\cite{statelem} to be:
 
 \begin{equation*}
   z_{i} = \frac{\hat\beta_{i}}{\hat\sigma\sqrt{v_{i}}}
@@ -103,7 +103,7 @@ error at each observation is the smallest possible, as illustrated by~\cref{fig:
     sample of points are shown in both plots which are drawn from the true
     relationship (orange line) with some random noise. A linear model is
     guessed at, resulting in the blue line in the upper plot. The square error at
-    each both is drawn as blue rectangles, the sum of their areas being RSS. By
+    each both is drawn as blue rectangles, the sum of their areas being RSS.\@ By
     minimizing this area we obtain the OLS estimate, shown in the lower plot.}
 \end{figure}
 
@@ -125,7 +125,7 @@ OLS is defined to be the trace of the projection matrix:
   \numberthis
   \text{tr}(H) &= \text{tr}\left[ \vb{X}\left( \vb{X}^{T}\vb{X} \right)^{-1}\vb{X}^{T}\right]\\
                &=   \text{tr}\left[ \vb{X}^{T}\vb{X}\left( \vb{X}^{T}\vb{X} \right)^{-1} \right]\\
-  &= \text{tr}{\vb{I}}
+  &= \text{tr}\left[ \vb{I} \right]\\
   &= p
 \end{align*}
 
@@ -133,7 +133,7 @@ OLS is defined to be the trace of the projection matrix:
 
 \subsection{Ridge Regularization}\label{subsec:Ridge}
 
-\textit{Regularization} solves many shortcomings of OLS. 
+\textit{Regularization} solves many shortcomings of OLS.\@
 If the design matrix exhibits multicolinearity  \(\left( X^{T}X
 \right)^{-1}\) is ill-conditioned. Numerical instability makes the solution
 unreliable. By shrinking large coefficients, this is alleviated.
@@ -276,7 +276,7 @@ error better and better, the variance increases.}
   \centering
   \includegraphics[]{figures/testbiasvariance.png}
   \caption{\label{fig:biastest} The same bias-variance decomposition as
-    in~\cref{fig:biastrain} but on the test MSE. Adding the square bias to the
+    in~\cref{fig:biastrain} but on the test MSE.\@ Adding the square bias to the
     variance matches the Monte Carlo mean of test MSE exactly. In difference to
     the training decomposition, the test bias increases after an initial
     decrease, the tell-tell sign of overfitting, and the variance increases
@@ -296,7 +296,7 @@ Training takes place on \(k-1\) parts of the data while the remaining
 \(k^{\text{th}}\) part is used for testing. This is repeated for \(k\) times,
 giving \(k\) different estimates of the model coefficients and test error.
 
-The cross validation estimate of the prediction error is CITE
+The cross validation estimate of the prediction error is~\cite{statelem}:
 
 \begin{equation*}
   \text{CV}(\hat f) = \frac{1}{N}\sum_{i=1}^{N}MSE(y_{i}, \hat f^{-\kappa(i)}(x_{i}))

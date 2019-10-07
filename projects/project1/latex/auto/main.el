@@ -15,6 +15,8 @@
     "Sections/Conclusion"
     "revtex4-1"
     "revtex4-110"
-    "Setup/style"))
+    "Setup/style")
+   (LaTeX-add-bibliographies
+    "bibliography.bib"))
  :latex)
 
