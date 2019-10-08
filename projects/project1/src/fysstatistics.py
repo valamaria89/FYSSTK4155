@@ -379,7 +379,7 @@ class Ridge(Regressor):
         """
         # Standardize the matrix
         mean = matrix.mean(axis=0)
-        std = matrix.(axis=0)
+        std = matrix.std(axis=0)
 
         def standardizer(mat):
             # Ignore the first column of constant term

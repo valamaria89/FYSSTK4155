@@ -108,6 +108,6 @@ class Sampler:
             return [X, Y], Z
         else:
             x = np.linspace(0, 1, 1000)
-            y = np.linspace(0, 1, 1000)
+            y = np.linspace(0, 1, 999)
             X, Y = np.meshgrid(x, y)
             return (X, Y), self.source(X, Y)
