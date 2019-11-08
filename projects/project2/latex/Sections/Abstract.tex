@@ -1,0 +1,29 @@
+%\abstractintoc % Add abstract to Table of Contents 
+%\abstractnum   % Format abstract like a chapter
+                % Remove if abstract should not be on its own page
+
+% \makeatletter
+% \renewenvironment{abstract}{%
+%     \if@twocolumn
+%       \section*{\abstractname}%
+%     \else %% <- here I've removed \small
+%       \begin{center}%
+%         {\bfseries \large\abstractname\vspace{\z@}}%  %% <- here I've added \Large
+%       \end{center}%
+%       \quotation
+%     \fi}
+%     {\if@twocolumn\else\endquotation\fi}
+% \makeatother
+
+\begin{abstract}
+  The behavior of ordinary least squares (OLS), Ridge and Lasso regularization
+  are studied by applying them to both synthetic terrain using the Franke
+  function and real world terrain data. The design matrix is constructed using
+  polynomials in two dimensions up to \nth{5} degree and all interactions.
+  OLS suffer from numerical instability due to high colinearity of the
+  polynomial terms. This is remedied by regularization. None of the methods
+  turns out to be  suited
+  for modeling terrain features in practice due to high variance of the data and
+  colinearity of non-orthogonal polynomial regression.
+\end{abstract}
+
