@@ -1,7 +1,7 @@
 
 module NAGD
 export NAGDContext, NesterovGradientDescent, fit!
-using ..Classification: OptimizerContext, Optimizer, σ, logcrossentropy, sigmoid!, logcrossentropy!, partition, stopearly!, postprocess!
+using ..Classification: OptimizerContext, Optimizer, σ, logcrossentropy, sigmoid!, logcrossentropy!, stopearly!, postprocess!
 import ..Classification: fit!
 using LinearAlgebra: mul!
 #using Random: shuffle!
@@ -29,7 +29,8 @@ mutable struct NesterovGradientDescent <: Optimizer
 end
 
 function NesterovGradientDescent(context=NAGDContext())
-    NesterovGradientDescent(context, false, false, false, 0, Float64[], Float64[], (zeros(Float64, (1, 1)), Float64[]))
+    NesterovGradientDescent(context, false, false, false, 0, Float64[], Float64[],
+                            (zeros(Float64, (1, 1)), Float64[]))
 end
 
 function fit!(optim::NesterovGradientDescent, β, X, y)
@@ -92,6 +93,26 @@ function fit!(optim::NesterovGradientDescent, β, X, y)
         end
     end
     postprocess!(optim)
+end
+
+function partition(length::Number, batchsize::Number)::Vector{UnitRange{Int}}
+    slices = Vector{UnitRange{Int}}(undef, length ÷ batchsize)
+    lastaddon = length % batchsize
+    start = 1
+    i = 1
+    while true
+        stop = start + batchsize - 1
+        if stop > length
+            break
+        end
+        slices[i] = start:stop
+        start = stop + 1
+        i += 1
+    end
+    #slices[end] = first(slices[end]):(last(slices[end])+lastaddon)
+    # I don't know how to do the last batch
+    pop!(slices)
+    slices
 end
 
 function shuffle!(X::Matrix{T} where T, y::Vector{V} where V)

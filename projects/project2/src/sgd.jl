@@ -7,14 +7,15 @@ using LinearAlgebra: mul!
 using Statistics: mean!
 
 struct SGDContext <: OptimizerContext
-    learningrate::Float64
-    decayrate::Float64
-    tolerance::Float64
+    learningrate::Float32
+    decayrate::Float32
+    tolerance::Float32
     maxiterations::Int
     batchsize::Int
 end
-SGDContext(;learningrate=0.1, decayrate=0.8, tolerance=eps(Float64),
-           maxiterations=1000, batchsize=8) = SGDContext(learningrate, decayrate, tolerance, maxiterations, batchsize)
+SGDContext(;learningrate=0.1, decayrate=0.8, tolerance=eps(Float32),
+           maxiterations=1000, batchsize=100) = SGDContext(learningrate, decayrate,
+                                                         tolerance, maxiterations, batchsize)
 
 mutable struct StochasticGradientDescent <: Optimizer
     context::SGDContext
@@ -22,39 +23,39 @@ mutable struct StochasticGradientDescent <: Optimizer
     earlystopping::Bool
     hasvalidationset::Bool
     iterations::Int
-    loss::Vector{Float64}
-    validationset::Tuple{Matrix{Float64}, Vector{Float64}}
-    validationloss::Vector{Float64}
+    loss::Vector{Float32}
+    validationset::Tuple{Matrix{Float32}, Vector{Int8}}
+    validationloss::Vector{Float32}
 end
 
 function StochasticGradientDescent(context=SGDContext())
-    StochasticGradientDescent(context, false, false, false, 0, Float64[], 
-                              (zeros(Float64, 1, 1), Float64[]), Float64[])
+    StochasticGradientDescent(context, false, false, false, 0, Float32[], 
+                              (zeros(Float32, 1, 1), Int8[]), Float32[])
 end
 
-function fit!(optim::StochasticGradientDescent, β, X, y)
+function fit!(optim::StochasticGradientDescent, β::Vector{T}, X, y) where {T<:Real}
     context = optim.context
     previousloss = -Inf
-    optim.loss = zeros(Float64, context.maxiterations)
-    momentum = zeros(Float64, size(β))
+    optim.loss = zeros(Float32, context.maxiterations)
+    momentum = zeros(Float32, size(β))
     n, k = size(X)
     m = context.batchsize
     #shuffled  = collect(1:n)
-    ŷbatch    = zeros(Float64, m)
-    ŷ         = zeros(Float64, n)
-    residuals = zeros(Float64, m)
-    ∇array    = zeros(Float64, (1, length(β)))
+    ŷbatch    = zeros(Float32, m)
+    ŷ         = zeros(Float32, n)
+    residuals = zeros(Float32, m)
+    ∇array    = zeros(T, (1, length(β)))
     ∇         = @view ∇array[1, :]
-    tmp1batch = zeros(Float64, m)
-    tmp1      = zeros(Float64, n)
-    tmp2      = zeros(Float64, n)
-    tmp       = zeros(Float64, (m, k))
+    tmp1batch = zeros(Float32, m)
+    tmp1      = zeros(T, n)
+    tmp2      = zeros(Float32, n)
+    tmp       = zeros(T, (m, k))
     loss      = [0.0]
-    Xbatch    = zeros(Float64, (m, k))
-    ybatch    = zeros(Float64, m)
+    Xbatch    = zeros(Float32, (m, k))
+    ybatch    = zeros(Float32, m)
     batches   = partition(n, context.batchsize)
 
-    @inbounds for i in 1:context.maxiterations
+    for i in 1:context.maxiterations
         optim.iterations += 1
         shuffle!(X, y)
 
@@ -68,8 +69,8 @@ function fit!(optim::StochasticGradientDescent, β, X, y)
             residuals .= ŷbatch .- ybatch
             tmp       .= Xbatch.*residuals
             mean!(∇array, tmp)
-            @. momentum  = -context.decayrate*momentum - context.learningrate * ∇
-            β          .+= momentum
+            @. momentum  = context.decayrate*momentum + context.learningrate * ∇
+            β          .-= momentum
         end
 
         mul!(tmp1, X, β)

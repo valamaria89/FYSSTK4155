@@ -1,69 +1,35 @@
 \section{Method}\label{sec:Method}
 
 
-\subsection{Simple Terrain Approximation}
-
-Before modeling real world terrain data, we will explore how
-polynomial regression works on synthetic terrain. The \textit{Franke function}
-has features similar to those one would expect from terrain with smooth hills
-and valleys. For simplicity we'll only to model the domain \(x, y \in [0,
-1]\), for which the Franke function is plotted in~\cref{fig:franke}.
-
-
-\begin{figure}[]
-  \centering
-  \includegraphics[trim={2cm 1cm 1cm 1cm},clip]{figures/franke.png}
-  \caption{\label{fig:franke} Visualization of the Franke function in the domain
-   \(0 \leq x, y \leq 1\) colored by height. A random sample of 100 points are
-   also shown.}
-\end{figure}
-
-\subsection{Real World Terrain Data}
-\label{sec:real-world-terrain}
-
-The real world terrain data was retrieved from
-\href{https://earthexplorer.usgs.gov/}{Earth Explorer} over the eastern Norway.
-
-I found it unrealistic for the polynomial model to be able to fit the terrain to
-any reasonable degree, so I decided to down-sample the terrain by a factor of
-\(50\). The original and down-sampled terrain are shown in~\cref{fig:terrain}
-
-\begin{figure}[]
-  \centering
-  \includegraphics[]{figures/terrain.png}
-  \caption{\label{fig:terrain} Digital terrain data over eastern Norway. The plot on
-    the right is down-sampled by a factor \(50\). The terrain is colored by
-    height using the
-    \href{https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html}{turbo
-    colormap}.}
-\end{figure}
-
-
 \subsection{Implementation Details}
 
-When fitting a model, a sample of \(100\) observations is drawn from the domains
-of \(x\) and \(y\)
-\(\text{franke}(\vb{x}, \vb{y})\) is computed. Gaussian noise \(\vb{\varepsilon}
-\sim \mathcal{N}(0, 0.1)\) is added. The terrain is mapped to \((0, 1)\) to
-prevent large numbers in the construction of the design matrix. This is all done in the \texttt{Sampler}
-class.
+When using linear regression to solve~\eqref{eq:1}, methods from
+\texttt{sklearn.linear\_models} were used as they are quicker and more versatile
+than my own code written for the first project.
 
+The logistic regression and neural network were written in Julia. Three versions
+of gradient descent were written: gradient descent, stochastic gradient descent
+and Nesterov gradient descent, all with early stopping. All of these
+were tested, confirmable by the example scripts in the git repository.
 
-To examine the behavior of the different regression methods, many models must be
-fitted to the data and their results recorded. This book-keeping is hid under the rug using the
-\texttt{Runner} class, allowing us to easily study the effects of
-hyperparameters and model complexity.
+Due to my
+unfamiliarity with the language, I made several critical design flaws. I began
+writing the code as I would do in C++ or Python, by object orienting it. Julia,
+however, is not designed for OO-programming, and trying to do so rewards you with
+inflexible code which is hard to optimize. The type system was abused, so
+instead of allowing my code to work on many different types, I constantly
+constrained myself to a small subset.
 
+The result of this mess is that a lot of time was spent hunting down bugs and
+trying to optimize hard-to-optimize code, wasting time and generating a low quality
+product. Two major consequences of this is that the neural net is incapable of
+performing linear regression, only classification, and that the code runs
+abysmally slow. In order to actually solve the problems of the project, I was
+forced to use the Julia package \texttt{Flux.jl} for the linear regression and
+grid search over hyperparameters for the classification. 
 
-Monte Carlo simulations are used for decomposing the MSE into squared bias and
-variance by regressing on perturbated \(y_{i}\). This is done in the
-\texttt{Ensemble} class.
+The reader can confirm that my neural net implementation does work on
+classification problems by running
+either the example script in the git repository or taking a look in the
+notebooks. 
 
-
-All of the results presented in this paper can be perfectly reduplicated by running the
-corresponding cells in the Jupyter Notebook as the random seed is set at each
-call to \texttt{Sampler}.
-
-All of the core code is tested against equivalent methods in the sklearn
-library, while much of the ``bookkeeping'' code is untested to save time. The
-tests themselves are tested with mutation testing using the \href{Cosmic Ray}{https://github.com/sixty-north/cosmic-ray} package.

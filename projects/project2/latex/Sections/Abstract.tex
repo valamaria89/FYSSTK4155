@@ -16,14 +16,15 @@
 % \makeatother
 
 \begin{abstract}
-  The behavior of ordinary least squares (OLS), Ridge and Lasso regularization
-  are studied by applying them to both synthetic terrain using the Franke
-  function and real world terrain data. The design matrix is constructed using
-  polynomials in two dimensions up to \nth{5} degree and all interactions.
-  OLS suffer from numerical instability due to high colinearity of the
-  polynomial terms. This is remedied by regularization. None of the methods
-  turns out to be  suited
-  for modeling terrain features in practice due to high variance of the data and
-  colinearity of non-orthogonal polynomial regression.
+  Feed forward multilayered perceptron neural networks are studied by writing
+  an implementation in the Julia language and compared to least squares, Ridge
+  and lasso regression for linear regression, and logistic regression for
+  classification. The data modeled is Ising model in 1D and 2D, and the physical
+  results and choice of hyperparameters are compared to the works of Mehta et
+  al. Our results consistently agree with theirs, with neural nets outperforming
+  standard machine learning methods for classification, but being worse than
+  Ridge and Lasso for regression. As the problems are relatively easy, the
+  optimal results are found using \(5\) to \(10\) neurons with ReLU or leaky ReLU and a
+  learning rate \(\eta < 0.1\) for classification.
 \end{abstract}
 

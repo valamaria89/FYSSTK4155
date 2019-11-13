@@ -4,6 +4,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_classification
+import sys
 
 class Network(object):
 
@@ -23,6 +24,18 @@ class Network(object):
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
+        print("SHAPES")
+        print(len(self.biases))
+        print(len(self.weights))
+        for i in range(1, 3):
+            print(self.biases[i-1].shape)
+            print(self.weights[i-1].shape)
+        self.weights = []
+        self.biases = []
+        for i in range(1,3):
+            self.weights.append(np.load(f"w{i}.npy"))
+            b = np.load(f"b{i}.npy")
+            self.biases.append(np.reshape(b, (len(b), 1)))
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -44,7 +57,7 @@ class Network(object):
         n = len(training_data)
         self.losses = []
         for j in range(epochs):
-            random.shuffle(training_data)
+            #random.shuffle(training_data)
             mini_batches = [
                 training_data[k:k+mini_batch_size]
                 for k in range(0, n, mini_batch_size)]
@@ -66,6 +79,7 @@ class Network(object):
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+            # 
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
         self.weights = [w-(eta/len(mini_batch))*nw
@@ -89,11 +103,30 @@ class Network(object):
             zs.append(z)
             activation = sigmoid(z)
             activations.append(activation)
+        #print(x)
+        #print(y)
+        #print("Activations")
+        #for i, a in enumerate(activations):
+        #   print(i, a)
+
         # backward pass
+        print("Z")
+        for z in zs:
+            print(z)
+            print()
+        print("COST DERIVATIVE")
+        print(self.cost_derivative(activations[-1], y) )
+        print("SIGMOID DERIVATIVE")
+        print(sigmoid_prime(zs[-1]))
+        for i in [-1, -0.5, 0, 0.5, 1]:
+            print(sigmoid_prime(i))
         delta = self.cost_derivative(activations[-1], y) * \
             sigmoid_prime(zs[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
+        print("NABLA")
+        print(nabla_b[-1])
+        print(nabla_w[-1])
         # Note that the variable l in the loop below is used a little
         # differently to the notation in Chapter 2 of the book.  Here,
         # l = 1 means the last layer of neurons, l = 2 is the
@@ -106,6 +139,10 @@ class Network(object):
             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
+        print("WEIGHTS")
+        for w in nabla_w:
+            print(w)
+        sys.exit()
         return (nabla_b, nabla_w)
 
     def evaluate(self, test_data):
@@ -150,7 +187,19 @@ if __name__ == "__main__":
         test.append((x, Y[c]))
         y = np.reshape(y, (2, 1))
         data.append((x, y))
-    net = Network([25, 8, 3, 2])
+    print(data[0][0].shape, data[0][1].shape)
+    X, y = np.load("X.npy"), np.load("Y.npy")
+    labels = np.load("labels.npy")
+    data = []
+    test = []
+    print(X.shape, y.shape, labels.shape)
+    for c in range(X.shape[1]):
+        x = np.reshape(X[:, c], (25, 1))
+        y_ = np.reshape(y[:, c], (2, 1))
+        data.append((x, y_))
+        test.append((x, labels[0, c]))
+    print(data[0][0].shape, data[0][1].shape)
+    net = Network([25, 5, 2])
     net.SGD(data, 100, 10, 0.1, test_data=test)
     plt.plot(net.losses)
     plt.show()

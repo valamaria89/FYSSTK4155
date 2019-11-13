@@ -21,32 +21,33 @@ mutable struct GradientDescent <: Optimizer
     earlystopping::Bool
     hasvalidationset::Bool
     iterations::Int
-    loss::Vector{Float64}
-    validationset::Tuple{Matrix{Float64}, Vector{Float64}}
-    validationloss::Vector{Float64}
+    loss::Vector{Float32}
+    # Lower memory usage is better than high precision
+    validationset::Tuple{Matrix{Float32}, Vector{Int8}}
+    validationloss::Vector{Float32}
 end
 
 function GradientDescent(context=GDContext())
-    GradientDescent(context, false, false, false, 0, Float64[], 
-                              (zeros(Float64, 1, 1), Float64[]), Float64[])
+    GradientDescent(context, false, false, false, 0, Float32[], 
+                   (zeros(Float32, 1, 1), Int8[]), Float32[])
 end
 
-function fit!(optim::GradientDescent, β::Vector{Float64},
-              X::Matrix{Float64}, y::Vector{Float64})
+function fit!(optim::GradientDescent, β::Vector{T},
+              X::Matrix{<:Real}, y::Vector{<:Real}) where {T<:Real}
     context = optim.context
     previousloss = -Inf
-    optim.loss = zeros(Float64, context.maxiterations)
+    optim.loss = zeros(Float32, context.maxiterations)
     # Preallocate everything
-    ŷ         = zeros(Float64, length(y))
-    residuals = zeros(Float64, length(y))
-    ∇array    = zeros(Float64, (1, length(β)))
+    ŷ         = zeros(Float32, length(y))
+    residuals = zeros(Float32, length(y))
+    ∇array    = zeros(T, (1, length(β)))
     ∇         = @view ∇array[1, :]
-    tmp1      = zeros(Float64, length(y))
-    tmp       = zeros(Float64, size(X))
+    tmp1      = zeros(T, length(y))
+    tmp       = zeros(T, size(X))
     loss      = [0.0]
-    tmp2      = zeros(Float64, length(y))
+    tmp2      = zeros(Float32, length(y))
 
-    @inbounds for i in 1:context.maxiterations
+    for i in 1:context.maxiterations
         optim.iterations += 1
         # ŷ = σ(X*β)
         mul!(tmp1, X, β)

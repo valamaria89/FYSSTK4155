@@ -1,12 +1,15 @@
 \begin{minipage}{\columnwidth}
 \section{Conclusion}\label{sec:Conclusion}
-Three methods of regression were examined and applied to model terrain features.
-Ordinary least squares managed to fit local features at the expense of
-overfitting, boundary issues and ill-conditioned matrices. Introducing
-regularization fixed these problems. Lasso had the additional advantage of
-setting many coefficients to exactly zero, discarding them from the models.
-Nevertheless, these methods proved to perform poorly at modeling terrains, and
-it is recommended that other methods are used instead. 
+
+Neural network is a very versatile method capable of repeating and outperforming
+the results of more traditional machine learning methods in linear and logistic
+regression. Ridge and Lasso regressions were found to outperform neural nets on
+regression, but this is not comparable as the neural nets used were the simplest
+possible, with no regularization. For classification problems the neural net
+greatly outperformed logistic regression by gradient descent. The results
+obtained are all in agreement with Mehta et al. The full extent of neural nets
+were not adequately explored due to design flaws and lack of time, but remains
+an area for future investigation. 
 
 
 \end{minipage}
