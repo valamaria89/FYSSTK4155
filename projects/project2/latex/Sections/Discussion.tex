@@ -38,7 +38,7 @@ the upper left triangular part of the coefficient matrix. This is owned to
 Lasso's \(L_{1}\) penalization, forcing some coefficients to exactly zero. As
 all variability in an \(\{J_{kl}, J_{lk}\}\) pair can be explained by one
 coefficient, the other is set to zero, giving only one diagonal. A too large
-regularization causes forces all elements to zero, as seen in the last panel
+regularization forces all elements to zero, as seen in the last panel
 of~\cref{fig:lasso_coeff},  giving no predictive power.
 
 \begin{figure}[H]
@@ -62,7 +62,7 @@ forced to zero.
 The explanation for this is the large number of redundant coefficients in the
 model. Only the two off-diagonal lines give non-zero contributions, explaining
 all the variance. Once a small regularization is applied, the redundancy is
-quickly decreases, decreasing the model variance, and won't decrease again until it is strong enough to affect
+quickly decreased, decreasing the model variance, and won't decrease again until it is strong enough to affect
 the off-diagonal terms, at which point the bias quickly increases.
 
 \begin{figure}[H]
@@ -93,7 +93,7 @@ regression methods. The net was highly sensitive for different learning rates,
 so a low rate of \(\eta = 0.0001\) had to be used. Nevertheless, the net quickly
 converged, suggesting the weights shown in~\cref{fig:netreg}. Comparing to the
 previous results, we see that it is qualitatively identical to least squares and
-Ridge, but having off-diagonal noise than least squares and less noise than
+Ridge, but having off-diagonal less noise than least squares and more than
 Ridge. This is expected, as the neural net does not use any regularization.
 
 \begin{figure}[H]
@@ -155,14 +155,15 @@ While classifying with a logistic classifier has only a handful of
 hyperparameters to tune, neural nets have so many that the parameter space can
 not be searched within practical time limits. In addition, tuning many
 parameters begs for visualizing high dimensional data, which quickly becomes
-noisy and uninformative. 
+noisy and uninformative. As such, only learning rates, activation function and
+number of hidden neurons were tuned.
 
 Figures~\ref{fig:sigmoid_grid}, \ref{fig:relu_grid} and~\ref{fig:leaky_grid}
 show the test accuracy as a function of learning rate \(\eta\) and number of
-neurons in the hidden layer for \(\sigma\), ReLU and leaky ReLU activation
+neurons in the hidden layer for sigmoid, ReLU and leaky ReLU activation
 functions. At a glance there are some noticeable differences.
 
-For both ReLU and leaky ReLU, a too high learning rate gives divergence. The
+For both ReLU and leaky ReLU, a too high learning rate ends in divergence. The
 reason is that the network is taking too large steps and
 quickly diverging. However, once the learning rate is low enough, the fast
 learning of ReLU's allows for the networks to get high accuracy even with few
@@ -170,7 +171,7 @@ neurons. A near perfect test accuracy is achieved with only \(5\) neurons in
 both cases. 
 
 The sigmoidal networks behave differently. The best results are achieved at high
-learning rates, becoming progressively poorer at lower rates. In addition, the
+learning rates, becoming progressively poorer at lower rates. In addition,
 few neurons are preferred. Both of these facts suggest that the network learns
 too slowly to fully exploit more neurons, something which is only worsened by
 lower learning rates.
@@ -208,3 +209,7 @@ other words, the network does not need to learn what unordered systems look
 like, only what ordered systems look like, as everything that is not ordered, be
 it ``real'' unordered systems or random data, are indistinguishable from unordered.
 
+In total, using ReLU or leaking ReLU with low learning rates and a few neurons
+gives optimal results with the least computational demand. The classification
+was not tested in the critical regime, something which should be performed in
+future work. 

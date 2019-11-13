@@ -1,7 +1,11 @@
 module NeuralNetwork
-export NeuralNet, fit!, predict, score, weave!, addLayer!, addSigmoidLayer!, FullyConnected, backpropagation, feedforward, minibatch, evaluate, addSoftmaxLayer!
+export NeuralNet, fit!, predict, score, weave!, addLayer!, 
+       addSigmoidLayer!, FullyConnected, backpropagation, 
+       feedforward, minibatch, evaluate, addSoftmaxLayer!
 
-using ..Classification: Optimizer, GDContext, SGDContext, NAGDContext, GradientDescent, StochasticGradientDescent, NesterovGradientDescent, partition, postprocess!
+using ..Classification: Optimizer, GDContext, SGDContext, NAGDContext, 
+                        GradientDescent, StochasticGradientDescent, 
+                        NesterovGradientDescent, partition, postprocess!
 import ..Classification: fit!, predict, score, logcrossentropy
 using Random: randn
 using Statistics: mean
@@ -31,19 +35,6 @@ end
 
 function newsize(layer::FullyConnected, newsize)::FullyConnected
     FullyConnected(newsize, layer.numneurons, layer.f, layer.f′)
-end
-
-struct SoftMaxLayer <: Layer
-    numneurons::Int
-    #W::Matrix{Float32}
-    f::Function
-    function SoftMaxLayer(numneurons)
-        new(numneurons, softmax)
-    end
-end
-
-function feed(layer::SoftMaxLayer, a)
-    a
 end
 
 struct NeuralNet
@@ -89,7 +80,7 @@ function getactivation(f::Union{Symbol, Function})::Tuple{Function, Function}
     elseif f == leakyrelu || f == :leakyrelu
         leakyrelu, ∇leakyrelu
     elseif f == :id
-        x -> x, x -> 1
+        x -> x, x -> one(x)
     else
         throw(KeyError("Activation $f not supported"))
     end
@@ -115,11 +106,6 @@ end
 
 function addLeakyReluLayer!(net::NeuralNet, numneurons)
     addLayer!(net, numneurons, leakyrelu, ∇leakyrelu)
-end
-
-function addSoftmaxLayer!(net::NeuralNet)
-    last = net.layers[end]
-    push!(net.layers, SoftMaxLayer(last.numneurons))
 end
 
 function weave!(net, X, y)
@@ -168,7 +154,7 @@ function feedforward(net::NeuralNet, X)
     for layer in net.layers
         X = layer.f.(layer.W*X .+ layer.b)
     end
-    #X .= softmax(X)
+    X .= softmax(X)
     X
 end
 

@@ -14,17 +14,17 @@ For the one dimensional model the energy is described by
   E[s^{i}] = -J\sum_{j=1}^{N}s_{j}s_{j+1}
 \end{equation*}
 
-with \(J\) as the coupling constant and \(s^{i}\) as a given spin state. The boundaries are periodic.
+with \(J\) as the coupling constant and \(s^{i}\) as a given spin state. 
 
 By lifting the constraint of only summing over nearest neighbors, the model can
-be recast to a linear regression problem. The energy is now
+be recast as a  linear regression problem. The energy is now
 
 \begin{align*}
   E[s^{i}] &= -\sum_{j,k=1}^{N}J_{j,k}s_{j}^{i}s_{k}^{i}\\
   &= \vb{X}^{i}\cdot\vb{J}\numberthis\label{eq:1}
 \end{align*}
 
-with \(\vb{X}^{i}\) the vector over two body interactions and \(\vb{J}\) the
+with \(\vb{X}^{i}\) being the matrix over two body interactions and \(\vb{J}\) the
 coupling coefficients. The regression can then be performed on the set
 \(\{E[s^i], s^{i}\}\).
 
@@ -32,7 +32,7 @@ When moving on to two dimensions, the Ising model exhibits phase transitions.
 Under the critical temperature \(T_{C}/J \approx 2.27\) the system is in an
 ordered phase with (almost) all spins pointing in the same direction. Above this
 temperature the system is in an disordered phase with spins randomly oriented.
-Examples of this are shown in~\cref{fig:matrix}. For practical purposes, ordered
+Examples of these are shown in~\cref{fig:matrix}. For practical purposes, ordered
 phases have \(T/J<2.0\) and disordered \(T/J > 2.5\).
 
 \begin{figure}
@@ -45,13 +45,16 @@ phases have \(T/J<2.0\) and disordered \(T/J > 2.5\).
 \subsection{Logistic Regression}
 
 In order to classify systems as either ordered or disordered, logistic
-regression is performed. Classification problems with linear regression methods have data which is assigned to
+regression is performed. Classification problems with logistic regression methods have data which is assigned to
 one of \(K\) classes using an indicator response variable \(\hat f_{k}= \hat
 \beta_{k0} + \hat\beta_{k}^{T}x\). 
 
-Our case is binary with \(K=2\), hence \(y_{i} \in \{0,
-1\} = \{ordered, disordered\}\). A popular choice is the sigmoid function,
-giving
+Our case is binary \(K=2\) with
+\begin{equation*}
+y_{i} \in \{0,1\} = \{ordered, disordered\}
+\end{equation*}
+
+A popular choice for assigned the response to a class is the sigmoid function, giving
 
 \begin{align*}
   p(y_{i} = 0 | x_{i},\hat\beta)  &= \frac{\exp(\hat{\beta}_{0} + 
@@ -131,10 +134,10 @@ bias. This is followed by a non-linear transformation
 \end{align*}
 The \textit{activation function } \(\sigma_{i}\) is specific to each layer. 
 The activation function of the output layer determines whether the network is a
-classifier, in which the function is a sigmoid or softmax function, or linear,
-where the function is linear.
+classifier, in which the function is a sigmoid or softmax function, or regression,
+where the function are unbounded linear functions.
 
-This combination of linear and non-linear transformations allows a network to
+The combination of linear and non-linear transformations allows a network to
 approximate any function to arbitrary precision, a result known as the universal
 approximation theorem\cite{mehta}. In order to achieve this expressive power,
 the network has to be trained. This is done by an algorithm known as
@@ -144,7 +147,7 @@ the network has to be trained. This is done by an algorithm known as
 
 To train a network, a cost function is optimized. For linear regression this is
 often the mean square error, while for classification this is often the cross
-entropy. The optimization is done by gradient descent, where an input is feed
+entropy. The optimization is done by gradient descent, where an input is fed
 forward through the network, compared to the expected output, and the error is
 fed backwards and used to update the weights and biases. This backpropagation of
 the error is essentially the chain rule from calculus applied recursively.

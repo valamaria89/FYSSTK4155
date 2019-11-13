@@ -116,7 +116,7 @@ class Ensemble:
         ax.set_xlabel("Complexity")
         fig.legend(loc='lower left', # mode='expand', 
                    ncol=2,
-                   bbox_to_anchor=(0.3, 1.02, 1, 0.2))
+                   bbox_to_anchor=(-1.3, 1.02, 1, 0.2))
 
         return fig, ax
 
