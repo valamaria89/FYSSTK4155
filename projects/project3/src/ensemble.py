@@ -32,6 +32,7 @@ class Ensemble:
         self.MSE_test = np.zeros_like(self.MSE_train)
         self.variance = np.zeros(n_fits)
         self.bias = np.zeros_like(self.variance)
+        self.coeffs = []
         progress = tqdm(total=n_fits*self.num_members)
         for i, hp in enumerate(hyperparameters):
             prediction = np.zeros((self.num_members, len(y_test)))
@@ -42,6 +43,9 @@ class Ensemble:
                 self.MSE_train[i, n] = clf.score(X_ensemble[n], y_ensemble[n])
                 self.MSE_test[i, n] = clf.score(X_test, y_test)
                 progress.update(1)
+
+            if hasattr(clf, "coef_"):
+                self.coeffs.append(clf.coef_.ravel().copy())
 
             mean = prediction.mean(axis=0)
             var = prediction.var(axis=0)
@@ -72,7 +76,8 @@ class Ensemble:
                 '-', label='Test', color='forestgreen', linewidth=0.4)
 
         ax.set_ylabel("Accuracy")
-        ax.set_xlabel("Hyperparamter")
+        ax.set_xlabel("Hyperparameter")
+        ax.set_xscale('log')
         lgd = fig.legend(loc='lower left',# mode='expand', 
                          ncol=2,
                          bbox_to_anchor=(0.3, 1.02, 1, 0.2))
@@ -103,17 +108,28 @@ class Ensemble:
         #        '--', label=r"$bias^2 + Var + \sigma_{\varepsilon}^2$",
         #        linewidth=0.4)
         ax.plot(hp, self.bias, label='$bias^2$')
-        ax.plot(hp, self.variance, label='Var')
+        ax.plot(hp, self.variance, label='$Var$')
         ax.plot(hp, self.bias + self.variance, 
                 '--', label="$bias^2 + Var$")
 
         ax.set_ylabel("Proability Error")
         ax.set_xlabel("Hyperparameter")
-        fig.legend()
-        #fig.legend(loc='lower left', # mode='expand', 
-        #           ncol=2,
-        #           bbox_to_anchor=(-1.3, 1.02, 1, 0.2))
+        ax.set_xscale('log')
+        #fig.legend()
+        fig.legend(loc='lower left', # mode='expand', 
+                   ncol=3,
+                   bbox_to_anchor=(0.1, 1.02, 1, 0.2))
 
+        return fig, ax
+
+    def plot_coeffs(self):
+        coeffs = np.asarray(self.coeffs)
+        fig, ax = plt.subplots()
+        ax.plot(self.hp, coeffs)
+        ax.set_xlabel("Hyperparameter")
+        ax.set_ylabel("Coefficient Value")
+        ax.set_yscale("symlog")
+        ax.set_xscale("log")
         return fig, ax
 
 
