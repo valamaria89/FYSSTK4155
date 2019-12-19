@@ -1,0 +1,661 @@
+\section{Theory}\label{sec:Theory}
+
+\subsection{Logistic Regression}\label{subsec:LogRegTheory}
+The main point of Logistic Regression is that it takes in a classification problem as input and gives probabilities as output. In the case of a yes or no answer one can say that the output is $Y = 1$ or $Y= 0$. Then one can use the sigmoid-function
+
+\begin{equation}\label{eq:1}
+    P = \frac{1}{1+\exp{-y}},
+\end{equation}
+
+
+which gives values between $1$ and $0$, this can be used to classify if the answer is either yes or no. $y$ is the equation of a line
+
+\begin{equation}\label{eq:2}
+    \hat{y}=\hat{X}^{T} \hat{w}+\hat{\epsilon},
+\end{equation}
+and if its value is tending towards negative infinity the sigmoid-function will be equal to zero and if it is tending to positive infinity the sigmoid-function will be equal to one. As the first rule of thumb one can classify the output of the the sigmoid as: under $0.5$ will give a no-answer and above $0.5$ will give a yes-answer. For training our model we use Gradient Descent that converges to the best solution. For this we need a cost function which we get by the likelihood of our output being $Y =1$ or $Y=0$
+
+\begin{equation}\label{eq:3}
+    \begin{array}{l}{p\left(y_{i}=1 | x_{i}, \hat{w}\right)=\frac{\exp \left(x_{i}w_{i}\right)}{1+\exp \left(w_{i} x_{i}\right)}} \\ {p\left(y_{i}=0 | x_{i}, \hat{w}\right)=1-p\left(y_{i}=1 | x_{i}, \hat{w}\right)}\end{array}.
+\end{equation}
+
+To obtain the total likelihood for all the possible outcomes of our dataset we use the Maximum Likelihood Estimation principle (MLE) \cite{Morten1}
+
+\begin{equation}\label{eq:6}
+    \left.P(\mathcal{D} | \hat{w})=\prod_{i=1}^{n}\left[p\left(y_{i}=1 | x_{i}, \hat{w}\right)\right]^{y_{i}}\left[1-p\left(y_{i}=1 | x_{i}, \hat{w}\right)\right)\right]^{1-y_{i}}.
+\end{equation}
+
+To obtain our cost/loss function or log-likelihood function is simply taking the log of the function above
+\begin{equation}\label{eq:8}
+    \mathcal{C}(\hat{w})=\sum_{i=1}^{n}\left(y_{i}\left(w_{i} x_{i}\right)-\log \left(1+\exp \left(w_{i} x_{i}\right)\right)\right).
+\end{equation}
+
+This function is commonly called \textit{The Cross Entropy} error function. To minimize the cost-function, which in turn optimizes our weights. We thus need to find the derivative in terms of the weights, presented here in matrix form
+
+\begin{equation}\label{eq:10}
+    \frac{\partial \mathcal{C}(\hat{w})}{\partial \hat{w}}=-\hat{X}^{T}(\hat{y}-\hat{p}).
+\end{equation}
+
+A gradient descent method either the regular Gradient Descent (GD), Stochastic Gradient Descent (SGD) or the Stochastic Gradient Descent with mini batches (MB) can minimize this function. If more information is need on the Logistic Regression and Gradient Descent methods one can find it in Project 2 \cite{Project2}.
+
+% \subsection{Neural Networks}
+% \\\asic idea behind Neural Network is to build a code that acts in a way similar to a brain, hence the name Neural Network. In the brain neurons are the basic working unit that transmits information around to the different areas of the brain. This is the design idea behind the Neural Network, though it does not work in the same way as a brain. There is an input, or a signal, which has information that we need to make sense of, this will be sent through a neural network where weights are connected from each input to each neuron, the latter often called a hidden layer. The weights have a value which indicates how active the particular hidden neuron should be. In this project we used Multilayer Perceptrons with Back Propagation (MLP) to analyse our data presented here. An MLP is a fully connected Feed Forward Neural Network (FFNN) with three or more layers (input layer, one or more hidden layer and an output layer), that also back propagates through the layers. 
+
+% The neurons in the hidden layer have non-linear activation functions, whilst the output nodes are assumed to be linear, which gives
+
+% \begin{equation}\label{eq:19}
+%     y=f\left(\sum_{i=1}^{n} w_{i} x_{i}+b_{i}\right)=f(z).
+% \end{equation}
+
+% Where $x_i$ is the input signal, $w_i$ are the weights and $b_i$ is the bias, which is needed if there is a zero activation on the weights of the inputs. For each node i in the first hidden layer, one can calculate the weighted sum of the output $x_{j}$ \cite{Morten3}
+
+% \begin{equation}\label{eq:20}
+%     z_{i}^{1}=\sum_{j=1}^{M} w_{i j}^{1} x_{j}+b_{i}^{1}.
+% \end{equation}
+
+% Where $ z_{i}^{1}$ is the argument to the activation function presented above \ref{eq:19} of each node $i$.
+% If one has more than one layer with different activation functions the general form of the output function for each layer becomes
+
+% \begin{equation}\label{eq:22}
+%     y_{i}^{l}=f^{l}\left(u_{i}^{l}\right)=f^{l}\left(\sum_{j=1}^{N_{l-1}} w_{i j}^{l} y_{j}^{l-1}+b_{i}^{l}\right).
+% \end{equation}
+
+% Where $l$ present number of layer in question.
+
+% The output of the network thus becomes,
+% \begin{gather+}[0.65]\label{eq:23}
+%   \begin{aligned}
+%     y_{i}^{l+1}= f^{l+1}\left[\sum_{j=1}^{N_{i}} w_{i j}^{3} 
+%     f^{l}\left(\sum_{k=1}^{N_{l}-1} w_{j k}^{l-1}\left(\ldots 
+%     f^{1}\left(\sum_{n=1}^{N_{0}} w_{m n}^{1} x_{n} +
+%      b_{m}^{1}\right) \cdots\right)+b_{k}^{l}\right)+b_{1}^{3}\right]
+%     \end{aligned}.
+% \end{gather+}
+
+% For the back propagation of the network we need a cost function, which in the case of a classification problem is the cross entropy function presented above \ref{eq:6}. 
+% There are four important equations in the BP algorithm that we need, to make sure that the errors are as small as possible.
+
+% \begin{equation}\label{eq:32}
+%     \hat{\delta}^{L}=f^{\prime}\left(\hat{z}^{L}\right) \circ \frac{\partial \mathcal{C}}{\partial\left(\hat{a}^{L}\right)},
+% \end{equation}
+
+% \begin{equation}\label{eq:34}
+%     \delta_{j}^{L}=\frac{\partial \mathcal{C}}{\partial z_{j}^{L}}=\frac{\partial \mathcal{C}}{\partial a_{j}^{L}} \frac{\partial a_{j}^{L}}{\partial z_{j}^{L}},
+% \end{equation}
+
+% \begin{equation}\label{eq:35}
+%     \delta_{j}^{L}=\frac{\partial \mathcal{C}}{\partial b_{j}^{L}} \frac{\partial b_{j}^{L}}{\partial z_{j}^{L}}=\frac{\partial \mathcal{C}}{\partial b_{j}^{L}},
+% \end{equation}
+
+%\begin{equation}\label{eq:37}
+%    \begin{aligned}
+%    &\delta_{j}^{l}=\sum_{k} \frac{\partial \mathcal{C}}{\partial z_{k}^{l+1}} \frac{\partial z_{k}^{l+1}}{\partial z_{j}^{l}} \\ 
+%    &=\sum_{k} \delta_{k}^{l+1} \frac{\partial z_{k}^{l+1}}{\partial z_{j}^{l}}\\
+%    &=\sum_{k} \delta_{k}^{l+1} w_{k j}^{l+1} f^{\prime}\left(z_{j}^{l}\right)
+%    \end{aligned}.
+%\end{equation}
+
+%These are the errors that help us minimize the weights of the network. The derivations of these and the theory behind them %are further elaborated in Project 2 \cite{Project2}
+
+\subsection{Decision Trees}\label{sec:Decision Trees}
+In what follows is the theory of \textit{Decision Trees} for \textit{classification}.
+A decision tree is a predictive model that partitions a feature space of data into ordered levels of nodes usually, but not necessarily, connected in a binary manner.
+
+Figure \ref{fig:decisiontree} shows an example of such a decision tree where the final outcome is divided into two classes of high rating and low rating. The top red node of the tree is called the \textit{root node} while the following blue nodes are called \textit{internal nodes}. The green end nodes, with arrows only pointing to them, are called \textit{leaf nodes}.
+
+\begin{figure}[htb]
+\begin{center}
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[Breakfast,fill=red!30
+%%% Dinner left
+[Dinner,fill=blue!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}
+%
+[Good for kids,fill=blue!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}
+% Good for kids Left:
+[High rating,fill=green!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}]
+% Good for kids Right:
+[Low rating,fill=green!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]
+% Dinner(left) right
+[Low rating,fill=green!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]
+%%% Good for kids right
+[Good for kids,fill=blue!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}[High rating,fill=green!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}][Dinner,fill=blue!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}
+% Good for kids Left:
+[High rating,fill=green!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}]
+% Good for kids Right:
+[Low rating,fill=green!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]]]
+\end{forest}
+\caption{Simple example of a \textit{decision tree}, with binary features and two classes; $\textit{Class} = \textit{(Low rating, High rating)}$. The later nodes in this figure aren't necessarily connected to the values of figure \cref{fig:decisiontreeCalc}}\label{fig:decisiontree}
+\end{center}
+\end{figure}
+
+To be able to decide how to split and order a decision tree, a measure of \textit{impurity} is needed. If a certain question, say the node "Breakfast" in the example \cref{fig:decisiontree}, completely separates all the ratings in the data into either low rating or high rating it would have zero impurity. Meaning that the truth value of this question alone would be a perfect predictor for the rating. This is usually not the case and assumed to not be the case for any of the questions in the example, thus they all have a degree of impurity. By measuring this impurity with a common metric we can compare the nodes and decide how to order them in an optimal manner.
+There are several ways of doing this, but the method used in this article is the \textit{Gini index} \cite[p.~309]{statelem}.
+\begin{equation}\label{eq:Gini1}
+I_G = \sum_{k \neq k^{\prime}} \hat{p}_{m k} \hat{p}_{m k^{\prime}}=\sum_{k=1}^{K} \hat{p}_{m k}\left(1-\hat{p}_{m k}\right)
+\end{equation}
+and using that $\sum_{k=1}^{K} \hat{p}_{m k} = 1$, \cref{eq:Gini1} can be written 
+\begin{equation}\label{eq:Gini2}
+    I_G = 1 - \sum_{k=1}^{K} \hat{p}_{m k}^2
+\end{equation}
+where $\hat{p}_{m k}$ is the proportion between given class $k$ observations to the total observations $N_m$ in that given node $m$, or put in a different way; $\hat{p}_{m k}$ is the probability of correct categorization of an outcome $k$ given the truth value of a feature corresponding to the node $m$. $\hat{p}_{m k^{\prime}}$ represent the probability of a mistaken categorization. The total observations of a given feature does not necessarily have to be equal for different features. Invoking aid by example, question "Dinner" in \cref{fig:decisiontree} has not been answered by the same number of raters as the question "Good for kids".
+Assuming that we have the two truth values, the total Gini impurity for a given feature is then the weighted average of the Gini indicies of the two possible truth values.
+For our fictional rating example we show in \cref{fig:decisiontreeCalc} the Gini impurities that determines which feature becomes the root node. These impurities were calculated by using \cref{eq:Gini2} in the following manner
+\begin{equation}
+    \begin{aligned}
+    I_G(yes) &= 1 - \hat{p}_{(yes,high)}^2 - \hat{p}_{(yes,low)}^2 \\
+    I_G(no) &= 1 - \hat{p}_{(no,high)}^2 - \hat{p}_{(no, low)}^2,
+    \end{aligned}
+\end{equation}
+and then taking the weighted average to obtain the Gini impurity
+\begin{equation}
+    I = w_{yes} \cdot I_G(yes) + w_{no} \cdot I_G{(no)}.
+\end{equation}
+where $w_{yes} = \frac{N_{yes}}{N_f}$ and similarly for $w_{no}$. Total observations for a given feature is $N_{f} = N_{yes} + N_{no}$.
+Looking at the Gini impurities in \cref{fig:decisiontreeCalc} we would pick "Breakfast" as the root node for the greater decision tree as it has the lowest Gini impurity. 
+The Gini impurity calculation is then repeated for the two remaining features for the next two edges, respectively. An example of an end result is already presented in \cref{fig:decisiontree}, where the final leaf nodes in this example is the class/outcome with highest probability for that path. A last point to be made; On the branch "No" to question "Dinner" on the left branch of our tree in \cref{fig:decisiontree}, why didn't we add the question "Good for kids"? If the Gini impurity of an added node gives a higher Gini impurity than the node representing the relevant truth value to the prior question("No" to "Dinner"), then adding the new question("Good for kids") increases the impurity of that branch. We would thus defer from adding the new question and simply make the truth valued node of the prior question the final leaf node. 
+We may now send test data that was not used to build the model through our decision tree to predict whether it would be given a predicted rating of high or low. 
+
+\begin{figure}[htb]
+\begin{center}
+\begin{forest}
+for tree={draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[Dinner,fill=blue!30
+%%%
+[\begin{tabular}{l|l}
+{\color[HTML]{3166FF} High} & {\color[HTML]{FE0000} Low} \\ \hline
+{\color[HTML]{3166FF} 105}  & {\color[HTML]{FE0000} 39} 
+\end{tabular},fill=green!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}]
+%
+[\begin{tabular}{l|l}
+{\color[HTML]{3166FF} High} & {\color[HTML]{FE0000} Low} \\ \hline
+{\color[HTML]{3166FF} 34}  & {\color[HTML]{FE0000} 125} 
+\end{tabular},fill=green!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]
+\node[below] at (0,-1.5) {Gini impurity $=0.364$};
+\end{forest}\qquad
+\begin{forest}
+for tree={draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[Breakfast,fill=blue!30
+%%%
+[\begin{tabular}{l|l}
+{\color[HTML]{3166FF} High} & {\color[HTML]{FE0000} Low} \\ \hline
+{\color[HTML]{3166FF} 127}  & {\color[HTML]{FE0000} 37} 
+\end{tabular} ,fill=green!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}]
+%
+[\begin{tabular}{l|l}
+{\color[HTML]{3166FF} High} & {\color[HTML]{FE0000} Low} \\ \hline
+{\color[HTML]{3166FF} 33}  & {\color[HTML]{FE0000} 100} 
+\end{tabular},fill=green!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]
+\node[below] at (0,-1.5) {Gini impurity $=0.360$};
+\end{forest}
+\bigbreak
+
+\begin{forest}
+for tree={draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[Good for kids,fill=blue!30
+%%%
+[\begin{tabular}{l|l}
+{\color[HTML]{3166FF} High} & {\color[HTML]{FE0000} Low} \\ \hline
+{\color[HTML]{3166FF} 92}  & {\color[HTML]{FE0000} 31} 
+\end{tabular},fill=green!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}]
+%
+[\begin{tabular}{l|l}
+{\color[HTML]{3166FF} High} & {\color[HTML]{FE0000} Low} \\ \hline
+{\color[HTML]{3166FF} 45}  & {\color[HTML]{FE0000} 129} 
+\end{tabular},fill=green!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]
+\node[below] at (0,-1.5) {Gini impurity $=0.381$};
+\end{forest}
+\caption{Comparing the decision trees with some fictional numbers. The high/low values represent the number of people in the data set that gave high/low rating given the truth value yes/no they chose. Breakfast gives the lowest Gini impurity and would thus be placed as the root node, as was done in \cref{fig:decisiontree}. The values are borrowed from, and the figure inspired by the educational videos at StatQuest \cite{STATQUEST} }\label{fig:decisiontreeCalc}
+\end{center}
+\end{figure}
+Decision trees are relatively easy and fast to construct, and they produce models which are intuitive and easy to interpret for smaller data sets. As we just saw in our toy model, new questions were rejected at certain branches. This illustrates how decision trees make internal feature selection easy and automatic, as it is a defining attribute of its construct. This property makes them highly resistant to the problem of including irrelevant predictor variables in a model. \cite[p.~352]{statelem}.
+
+
+\subsection{Random Forest}
+Continuing the discussion from \cref{sec:Decision Trees} above. There are downsides to Decision Trees, and the main issue is summed up well by Hastie, Tibshirani and Friedman "Trees have one aspect that prevents them from being the ideal tool for predictive learning, namely inaccuracy"\cite[p.~352]{statelem}.
+Decision trees rarely provide the accuracy that we would want. The error on a test sample is commonly relatively big compared to the error on the training sample. To tackle this we may give up some of the mentioned gains of Decision Trees for an acceptable cost. One category of approach is called \textit{bagging}(portmanteau of bootstrap and aggregating), where the method of \textit{Random Forest} resides as its proudest member. The cost of using Random Forest compared to Decision Trees is mainly realized in our computational expenses and to the ease of interpretation. The latter point simply means that when we bag a model, the simple structure of Decision Trees is lost, as it is no longer a tree \cite[p.~352]{statelem}. On the other hand, the advantage of Random Forests is that it greatly improves accuracy.
+
+So what do we mean by bagging? Suppose we have some training data that we want to fit a model to, say
+\begin{equation}
+\mathbf{Z}=\left\{\left(x_{1}, y_{1}\right),\left(x_{2}, y_{2}\right), \dots,\left(x_{N}, y_{N}\right)\right\}
+\end{equation}.
+Where the $x_i$ variable is our instance row of features, and $y_i$ our target.
+We want to find a prediction $\hat{f}(x)$ for any instance input $x$.
+We begin by creating a \textit{bootstrapped} data set out of our training data.
+This simply means we pick out at random a predefined number, $N$, of instances from our training data set and place them in our new bootstrapped data set $\mathbf{Z}^{*}$. We may continue creating several bootstrapped data set, giving $\mathbf{Z}^{* b}, b=1,2, \ldots, B$.
+We sample \textit{with replacement}, meaning that we are allowed to pick the same instance twice. This also means that for a large data set we will by the law of large numbers have instances of the original data set that were not used in the bootstrapped data. We shall soon see that this is convenient. 
+
+In \cref{fig:BootstrappedData} we see a fictional example of the process of bootstrapping and then building a tree from the bootstrapped data set.
+
+\setlength\tabcolsep{0pt}
+\begin{table}[htb]
+    \centering
+    \begin{tikzpicture}
+        \node (a) at (0,0){
+        \resizebox{60mm}{!}{%
+            \begin{tabular}{|P{3mm}|P{19mm}|P{19mm}|P{21mm}|P{19mm}|}
+                            \hline
+              i & \cellcolor[HTML]{9698ED} Breakfast & \cellcolor[HTML]{9698ED}Dinner & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{=====}
+            1 & Yes                               & Yes                            & No                                    & Yes                                 \\ \hline 
+            2 & Yes                               & No                             & No                                    & No                                  \\ \hline 
+            3 & Yes                               & Yes                            & No                                    & Yes                                 \\ \hline 
+            4 & No                                & Yes                            & Yes                                   & Yes                                 \\ \hline 
+            \end{tabular}}};
+            \node[yshift=-2cm] (b) at (a.south){
+            \setlength\tabcolsep{0pt}
+            \centering
+            \resizebox{60mm}{!}{%
+            \begin{tabular}{|P{3mm}|P{19mm}|P{19mm}|P{21mm}|P{19mm}|}
+            \hline
+             i & \cellcolor[HTML]{9698ED}Breakfast & \cellcolor[HTML]{9698ED}Dinner & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{=====}
+              1 & Yes                               & Yes                            & No                                    & Yes                                 \\ \hline
+              1 & Yes                               & Yes                             & No                                    & Yes                                  \\ \hline
+              4 & No                               & Yes                            & Yes                                    & Yes                                 \\ \hline
+              2 & Yes                                & No                            & No                                   & No                                 \\ \hline
+            \end{tabular}}
+            };
+        \draw[->,thick](a)--(b) node[pos=0.5,right] {Bootstrapping} node[pos=0.5,left] {\textbf{Step 1.}};
+        
+        \node[yshift=-2cm] (c) at (b.south){
+            \setlength\tabcolsep{0pt}
+            \centering
+            \resizebox{60mm}{!}{%
+            \begin{tabular}{|P{3mm}|>{\columncolor[HTML]{EFEFEF}}>{\leavevmode\color[HTML]{C0C0C0}}P{19mm}|P{19mm}|P{21mm}|P{19mm}|}
+            \hline
+             i & Breakfast & \cellcolor[HTML]{9698ED}Dinner & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{=====}
+              1 & Yes                               & Yes                            & No                                    & Yes                                 \\ \hline
+              1 & Yes                               & Yes                             & No                                    & Yes                                  \\ \hline
+              4 & No                               & Yes                            & Yes                                    & Yes                                 \\ \hline
+              2 & Yes                                & No                            & No                                   & No                                 \\ \hline
+            \end{tabular}}
+            };
+        \draw[->,thick](b.south)--(c) node[pos=0.5,right,text width=4cm] {Randomly pick \\ two feature-columns}
+        node[pos=0.5,left] {\textbf{Step 2.}}
+        ;
+        
+            \node[yshift=-2.5cm] (d) at (c.south){
+            \setlength\tabcolsep{0pt}
+            \centering
+            \resizebox{27mm}{!}{%
+            \begin{forest}
+            for tree={anchor=center,fit=band, draw,
+                rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+                  edge={black, line width=0.5mm,->}}
+            [Dinner,tikz={\node [draw, black, fit=()(!1)(!2)]{};}, fill=red!30
+            %%% Dinner left
+            [,fill=blue!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}][,fill=blue!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]
+            \end{forest}
+            }
+            };
+        \draw[->,thick](c.south)--($(d.north)+(0,0.2)$) node[pos=0.5,right,text width=4cm] {Lowest impurity of the two feature-columns \\ gives the root node}
+        node[pos=0.5,left] {\textbf{Step 3.}}
+        ;
+        
+            \node[yshift=-2.5cm] (e) at (d.south){
+            \setlength\tabcolsep{0pt}
+            \centering
+            \resizebox{48mm}{!}{%
+            \begin{tabular}{|P{3mm}|P{19mm}|P{21mm}|P{19mm}|}
+            \hline
+             i & \cellcolor[HTML]{9698ED}Breakfast & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{====}
+              1 & Yes   & No   & Yes    \\ \hline
+              1 & Yes   & No    & Yes   \\ \hline
+              4 & No    & Yes   & Yes   \\ \hline
+              2 & Yes   & No    & No    \\ \hline
+            \end{tabular}}
+            };
+        \draw[->,thick]($(d.south)+(0,-0.2)$)--(e) node[pos=0.5,right,text width=4cm] {Repeat from step 2. using the remaining columns, at each node respectively};
+    \end{tikzpicture}
+    \caption{This figure shows the process of bootstrapping and building a tree from the bootstrapped data. The latter is done by picking a random subset of features-columns. In this case the subset size was chosen as two}
+    \label{fig:BootstrappedData}
+\end{table}
+
+Typically we would want to repeat the whole process from step 1. seen in \cref{fig:BootstrappedData} a great number of times. Meaning that we create many bootstrapped data sets $b=1,2, \ldots, B$ and create a tree for each one.
+Thus the example \cref{fig:BootstrappedData} would then correspond to $\mathbf{Z}^{* b=1}$. An imagined result of trees made from $\mathbf{Z}^{* b}, b=1,2, \ldots, B=4$ bootstrapped data sets is shown in \cref{fig:boostrapstrees}.
+Each of the trees represent our fitted models giving us the prediction $\hat{f}^{* b}(x)$.
+
+
+\begin{figure}[htb]
+\begin{center}
+\resizebox{27mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!30
+%
+[,fill=blue!30
+%
+[,fill=blue!30
+% 
+[,fill=green!30]
+% 
+[,fill=green!30]]
+% 
+[,fill=green!30]]
+%
+[,fill=blue!30[,fill=green!30][,fill=blue!30
+% 
+[,fill=green!30]
+% 
+[,fill=green!30]]]]
+\node[below] at (0,1.1) [fontscale=5] {$b=1$};
+\end{forest}} \qquad
+\resizebox{16mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!30
+%
+[,fill=blue!30
+%
+[,fill=blue!30
+% 
+[,fill=green!30]
+% 
+[,fill=green!30]]
+% 
+[,fill=green!30]]
+%%%
+[,fill=green!30]]
+\node[below] at (0,1.1) [fontscale=5] {$b=2$};
+\end{forest}}
+\bigbreak
+
+\resizebox{22mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!30
+%
+[,fill=blue!30
+%
+[,fill=green!30]
+%
+[,fill=green!30]]
+%%%
+[,fill=blue!30
+%
+[,fill=green!30]
+%
+[,fill=green!30]]]
+\node[below] at (0,1.1) [fontscale=5] {$b=3$};
+\end{forest}}
+\qquad
+\resizebox{22mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!30
+%
+[,fill=blue!30
+%
+[,fill=green!30]
+%
+[,fill=blue!30
+[,fill=green!30][,fill=green!30]]]
+%%%
+[,fill=blue!30
+%
+[,fill=green!30]
+%
+[,fill=green!30]]]
+\node[below] at (0,1.1) [fontscale=5] {$b=4$};
+\end{forest}}%
+\caption{}\label{fig:boostrapstrees}
+\end{center}
+\end{figure}
+
+Now, we can use this model with a test data set. Let's say our test data is just a single rater, e.g. as in \cref{tab:SingleRater}.
+\setlength\tabcolsep{0pt}
+\begin{table}[htb]
+    \centering
+        \resizebox{60mm}{!}{%
+            \begin{tabular}{|P{20mm}|P{20mm}|P{21mm}|P{21mm}|}
+                            \hline
+               \cellcolor[HTML]{9698ED} Breakfast & \cellcolor[HTML]{9698ED}Dinner & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{====}
+             Yes     & Yes       & No        & Yes       \\ \hline 
+            \end{tabular}}
+    \caption{}
+    \label{tab:SingleRater}
+\end{table}
+
+Starting with the tree $b=1$ we would now check which feature the first node corresponds to and evaluate the truth value according to the feature-values of the rater. This leads us down one branch path until we reach a leaf node and obtain a target value of either $\textit{High Rating} = Yes/No$. Continuing with the same procedure for $b=2,3,4$ we could end up with something like in \cref{tab:SingleRaterResult}.
+
+\setlength\tabcolsep{0pt}
+\begin{table}[htb]
+    \centering
+        \resizebox{35mm}{!}{%
+            \begin{tabular}{|P{20mm}|P{20mm}|}\hline 
+            \cellcolor[HTML]{BCFFBB}High Rating &       
+            \cellcolor[HTML]{BCFFBB}Low Rating \\ 
+            \hhline{==}
+            3        & 1       \\ \hline 
+            \end{tabular}}
+    \caption{}
+    \label{tab:SingleRaterResult}
+\end{table}.
+
+For the \textit{Aggregate} part of \textit{Bagging} we have two possible cases;
+\begin{itemize}
+    \item When predicting numerical outcomes the aggregation averages over the versions \\ $\hat{f}_{\mathrm{bag}}(x)=\frac{1}{B} \sum_{b=1}^{B} \hat{f}^{* b}(x)$
+    \item While when predicting a class the aggregation picks the most frequent outcome.
+\end{itemize}\cite{Breiman1996}\cite[p.~282]{statelem}
+In our \cref{tab:SingleRaterResult} we would thus pick \textit{High Rating}.
+
+One last point to be made is that through this method of bagging we have obtained a validation data set that is free to be used. As mentioned before we \textit{sample with replacement} hence we will with a large data set most certainly have a large number of instances that were not included in the bootstrap data sets. These instances are called \textit{out-of-bag} data set. In \cref{fig:BootstrappedData} we see that $i=3$ was not used in the bootstrapped data set and this instance thus part of the \textit{out-of-bag} data set. We may run our \textit{out-of-bag} data set through all the trees in our model and obtain an \textit{Out-of-bag Error}. This is essentially a validation error that helps us asses the quality of our model.
+
+\subsection{Ada Boost}
+In Random Forest we had no fixed set depth of our trees, as can be seen in \cref{fig:boostrapstrees}. In \textit{Ada Boost} we pre-set the number of nodes, usually only a root node with two terminal leaf nodes, as in \cref{fig:AdaBoost1}.
+These types of trees are called \textit{stumps}, and in Ada Boost we essentially have a forest of many weak learners, typically such stumps.
+
+
+\begin{figure}[htb]
+\begin{center}
+\resizebox{15mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!30
+%
+[,fill=green!30]
+%
+[,fill=green!30]]
+\end{forest}}
+\caption{Ada boost stump example. One root node, and two leaf nodes.}\label{fig:AdaBoost1}
+\end{center}
+\end{figure}
+
+In the case of Random Forest we gave the same importance to every tree in the quest of predicting the target variable. So every tree in e.g. \ref{fig:boostrapstrees} has an equal vote in the final election.
+Ada Boost on the other is not as democratic as it does not necessarily give an equal vote(weight) to the trees(shown figuratively in \cref{fig:AdaBoost2} with different colour contrasts representing weight).
+
+\begin{figure}[htb]
+\begin{center}
+\resizebox{15mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!100
+%
+[,fill=green!100]
+%
+[,fill=green!100]]
+\end{forest}}\qquad
+\resizebox{15mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!10
+%
+[,fill=green!10]
+%
+[,fill=green!10]]
+\end{forest}}\qquad
+\resizebox{15mm}{!}{%
+\begin{forest}
+for tree={anchor=center, draw,
+    rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+      edge={black, line width=0.5mm,->}}
+[,fill=red!40
+%
+[,fill=green!40]
+%
+[,fill=green!40]]
+\end{forest}}\qquad
+\caption{Ada boost stump example. Where the contrast of the color represents different weight to the stump. The contrast/weights in this example are $100\%, 10\%, 40\%$ respectively }\label{fig:AdaBoost2}
+\end{center}
+\end{figure}
+
+The third point of difference from Random Forest is that each stump considers the prior mistakes of other stumps. Before we go further into detail we can summarize the three defining properties of the method
+
+\begin{enumerate}
+    \item Our model consist of \textit{Weak Learners}, typically \textit{Stump trees}
+    \item Each Stump tree has a different weight.
+    \item Each stump tree takes into consideration the prediction of the previous stump
+\end{enumerate}
+
+For the actual calculation we begin 
+by initializing weights on each instance of our data set. These are all simply set to $w_{i}=1 / N, i=1,2, \ldots, N$.
+
+\setlength\tabcolsep{0pt}
+\begin{table}[htb]
+    \centering
+    \begin{tikzpicture}
+        \node (a) at (0,0){
+        \resizebox{60mm}{!}{%
+            \begin{tabular}{|P{15mm}||P{19mm}|P{19mm}|P{21mm}|P{19mm}|}
+                            \hline
+               \cellcolor[HTML]{FFCCC9} Sample weight & \cellcolor[HTML]{9698ED} Breakfast & \cellcolor[HTML]{9698ED}Dinner & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{=||====}
+            1/4 & Yes       & Yes       & No        & Yes       \\ \hline
+            1/4 & Yes       & No        & No        & No        \\ \hline
+            1/4 & Yes       & Yes       & No        & Yes       \\ \hline
+            1/4 & No        & Yes       & Yes       & Yes       \\ \hline
+            \end{tabular}}};
+            \node[yshift=-2cm] (b) at (a.south){
+            \setlength\tabcolsep{0pt}
+            \centering
+            \resizebox{60mm}{!}{%
+            \begin{tabular}{|P{15mm}||>{\columncolor[HTML]{EFEFEF}}>{\leavevmode\color[HTML]{C0C0C0}}P{19mm}|>{\columncolor[HTML]{EFEFEF}}>{\leavevmode\color[HTML]{C0C0C0}}P{19mm}|P{21mm}|P{19mm}|}
+                            \hline
+               \cellcolor[HTML]{FFCCC9} Sample weight & \cellcolor[HTML]{EFEFEF} Breakfast & \cellcolor[HTML]{EFEFEF}Dinner & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{=||====}
+            1/4 & Yes       & Yes       & No        & Yes       \\ \hline
+            1/4 & Yes       & No        & No        & No        \\ \hline
+            1/4 & Yes       & Yes       & No        & Yes       \\ \hline
+            1/4 & No        & Yes       & Yes       & Yes       \\ \hline
+            \end{tabular}
+            }
+            };
+        \draw[->,thick](a)--(b) node[pos=0.5,right] {Check each stump(one feature)} node[pos=0.5,left] {\textbf{Step 2.}};
+        \draw[->,thick]($(a.north)+(0,1)$)--(a.north) node[pos=0.5,right,text width=4cm] {Initialize weights}
+        node[pos=0.5,left] {\textbf{Step 1.}};
+        
+        \node[yshift=-2cm] (c) at (b.south){};
+        \draw[->,thick](b.south)--(c) node[pos=0.5,right,text width=4cm] {Randomly pick \\ two feature-columns};
+        
+            \node[yshift=-2.5cm] (d) at (c.south){
+            \setlength\tabcolsep{0pt}
+            \centering
+            \resizebox{27mm}{!}{%
+            \begin{forest}
+            for tree={anchor=center,fit=band, draw,
+                rounded corners,s sep+=1pt,l sep+=8pt,font=\tiny, minimum width=1cm, minimum height = 0.5cm, 
+                  edge={black, line width=0.5mm,->}}
+            [Dinner,tikz={\node [draw, black, fit=()(!1)(!2)]{};}, fill=red!30
+            %%% Dinner left
+            [,fill=blue!30,edge label ={node[color=blue,midway,above,sloped,font=\tiny]{Yes}}][,fill=blue!30,edge label ={node[color=red,midway,above,sloped,font=\tiny]{No}}]]
+            \end{forest}
+            }
+            };
+        \draw[->,thick](c.south)--($(d.north)+(0,0.2)$) node[pos=0.5,right,text width=4cm] {Lowest impurity of the two feature-columns \\ gives the root node}
+        node[pos=0.5,left] {\textbf{Step 3.}}
+        ;
+        
+            \node[yshift=-2.5cm] (e) at (d.south){
+            \setlength\tabcolsep{0pt}
+            \centering
+            \resizebox{48mm}{!}{%
+            \begin{tabular}{|P{3mm}|P{19mm}|P{21mm}|P{19mm}|}
+            \hline
+             i & \cellcolor[HTML]{9698ED}Breakfast & \cellcolor[HTML]{9698ED}Good for kids & \cellcolor[HTML]{67FD9A}High Rating \\ \hhline{====}
+              1 & Yes   & No   & Yes    \\ \hline
+              1 & Yes   & No    & Yes   \\ \hline
+              4 & No    & Yes   & Yes   \\ \hline
+              2 & Yes   & No    & No    \\ \hline
+            \end{tabular}}
+            };
+        \draw[->,thick]($(d.south)+(0,-0.2)$)--(e) node[pos=0.5,right,text width=4cm] {Repeat from step 2. using the remaining columns, at each node respectively};
+    \end{tikzpicture}
+    \caption{This figure shows the process of bootstrapping and building a tree from the bootstrapped data. The latter is done by picking a random subset of features-columns. In this case the subset size was chosen as two}
+    \label{fig:AdaBoostAlogrithm}
+\end{table}
+
+
+
+\subsection{Metrics}\label{sec: Metrics}
+
+There exists a plethora of metrics for quantifying the quality of classification.
+As this is a binary classification problem with class imbalances remedied, the metrics
+\textit{accuracy}, \textit{ROC-curve} and \textit{confusion matrix} were chosen. Others such as \textit{F1} and \textit{precision-recall curves} were considered but left out
+as they do not provide any more insight.
+\subsubsection{Accuracy Score} \label{accuracy}
+The accuracy score measure the ratio of correct classification to the total population:
+\begin{equation}
+    \text { Accuracy }=\frac{\sum_{i=1}^{n} I\left(t_{i}=y_{i}\right)}{n}.
+\end{equation}
+where $t_i$ is the target data points and $y_i$ is predicted data points. Accuracy score is widely used in classification methods, but it is not necessarily giving the wider picture. Therefore in this project we have made use of many different metrics to see the full picture of how our models perform.  
+
+\subsubsection{ROC and AUC}\label{ROC and AUC}
+The \textit{Receiver operating characteristic}(ROC)\cite{Project2} is a curve often used for graphical illustration to asses the quality of a model and to find the optimal classification. In the case of the Yelp data one might classify a prediction(a probability), as `probably \textit{top rated}(1)' or `probably not top rated(0)'. To be able classify the data one must define a threshold, say $50\%$. Meaning that those with over $50\%$ chance will be classified as \textit{top rated}. In this case there might be those that did are not top rated, but were incorrectly classified as \textit{top rated}(above $50\%$), this is called \textit{False Positives}. There might also be those who did where classified as top rated, but were incorrectly classified as such, these cases are called \textit{False Negatives}. The two other possibilities is when we classify correctly: \textit{True Positives} and \textit{True Negatives}. If we change the threshold we will get different numbers of the four scores above, and this is exactly what is done with the ROC curve. A value on the horizontal axis, for a given threshold is calculated by
+\begin{gather+}[0.9]
+    \text{True Positive Rate} =\frac{\text { True Positives }}{\text { True Positives }+\text { False Negatives } }
+\end{gather+}
+and the vertical axis by
+\begin{gather+}[0.9]
+\text { False Positive Rate }=\frac{\text { False Positives }}{\text { False Positives }+\text { True Negatives }}.
+\end{gather+}
+A diagonal line is also usually drawn to graphically show where $True Positive Rate = False$.
+The ROC is simply put a graph that plots the \textit{hit rate} against the \textit{false alarm rate}
+
+\paragraph{AUC}
+The \textit{Area Under the Curve}(AUC) is exactly that, the area under the curve of the ROC curve. This metric can be used to compare one ROC curve with another ROC curve to assess which one has the greatest area under the curve, and thus is the best model.
+
+% \subsubsection{Precision, Recall and f1-score}
+
+% Now we actually give the True positive rate as mentioned above, a name: Recall
+% \begin{equation}
+%     \text{Recall} = \frac{\text { True Positives }}{\text { True Positives }+\text { False Negatives } },
+% \end{equation}
+% and it calculates how many of the predicted positives are actual positives.
+
+% Precision is as follows
+% \begin{equation}
+%     \text{Recall} =\frac{\text { True }}{\text { False Positives }+\text { True Negatives }},
+% \end{equation}
+% which tell us how many of the predicted positive are precise positives.
+% The f1-score 
+
+% \begin{equation}
+%     \mathrm{F} 1=2 \times \frac{\text { Precision } * \text {Recall}}{\text { precision }+\text {Recall}},
+% \end{equation}
+%  might be a better measure to use if we need to seek a balance between Precision and Recall and if there is an uneven class distribution (large number of Actual Negatives). 
+%  All these give a broader picture of how the model predicts and it can be good additions to the accuracy score. 
+
+% \subsubsection{Cumulative Gain Chart}\label{Cumulative Gain Chart}
+% A \textit{Cumulative Gain Chart} is, as with the ROC curve, a way to evaluate a model.
+% After we obtain a set of probability predictions from our model they are sorted from highest probability to lowest.
+% Meanwhile we keep track of the actual binary predictions that correspond to each probability. 
+

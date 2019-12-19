@@ -1,0 +1,17 @@
+\begin{minipage}{\columnwidth}
+\section{Conclusion}\label{sec:Conclusion}
+After applying various classification algorithms on the Yelp data, it was found that logistic regression was sufficient enough for this type of analysis, as more advanced methods provides no significant benefit.
+
+There was found support for "rating inertia" where businesses with high rating are more
+likely to receive favorable reviews and users who tend to give high rating too are more likely to give favorable reviews. This leads to the rather unhelpful advice for businesses to avoid low ratings and bar low rating customers from entry.
+
+Removing previous ratings from both business and user greatly deteriorates the
+performance of the classifiers, suggesting that the remaining factors rather uninformative. However, that a feature does not contribute to a model's predictive power
+does not mean that the feature is not important. Customers may very well enjoy having
+free WiFi, increasing their likelihood of giving favorable reviews, but perhaps omits this meta data from their review. In other words, it can be that the Yelp dataset is
+too incomplete to be useful in predicting rating from metadata. It may also
+be the case that our methods were too simple in analysing the data.
+
+The analysis performed gives no support for our initial hypothesis, that one can use the
+business and user meta data to predict reviews for a business in question. 
+\end{minipage}

@@ -1,0 +1,25 @@
+%\abstractintoc % Add abstract to Table of Contents 
+%\abstractnum   % Format abstract like a chapter
+                % Remove if abstract should not be on its own page
+
+% \makeatletter
+% \renewenvironment{abstract}{%
+%     \if@twocolumn
+%       \section*{\abstractname}%
+%     \else %% <- here I've removed \small
+%       \begin{center}%
+%         {\bfseries \large\abstractname\vspace{\z@}}%  %% <- here I've added \Large
+%       \end{center}%
+%       \quotation
+%     \fi}
+%     {\if@twocolumn\else\endquotation\fi}
+% \makeatother
+
+\begin{abstract}
+Classification is performed on Yelp reviews in an attempt to predict a rating based on previous business and user data.
+The methods employed are logistic regression, random forest and AdaBoost. All methods gave similar performance with logistic
+regression consistently performing slightly better. When ranking features by importance it is discovered that the 
+average business rating and average user rating are by far the most important features, entailing that the models are of minimal
+assistance if one wishes to predict ratings for the purpose of helping businesses bettering their ratings.   
+\end{abstract}
+
